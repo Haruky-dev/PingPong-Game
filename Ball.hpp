@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include "Utils.hpp"
 
-
 // using Vect = std::vector<sf::Vector2f>;
 
 class Ball : public sf::Drawable {
@@ -17,6 +16,7 @@ class Ball : public sf::Drawable {
         int radius;
         int speed;
         bool start;
+        bool moving;
         
 
     protected:
@@ -26,6 +26,8 @@ class Ball : public sf::Drawable {
         Ball();
         bool CheckCollision();
         void Reposition( Utils::Sides side );
+        void ResetPos();
         void UpdateState( const sf::Time& dt );
-        const sf::Vector2f getDirec() const;
+
+        sf::FloatRect getBounds() const;
 };

@@ -1,8 +1,10 @@
 #include "Ball.hpp"
 
+#include "Utils.hpp"
+
 #include <print>
 
-Ball::Ball() : radius(10.f), start(true), speed(400.f) {
+Ball::Ball() : radius(10.f), start(true), speed(400.f), moving(true) {
     ball.setRadius( radius );
     ball.setFillColor( sf::Color::White );
     // ball.setOutlineThickness(1.f);
@@ -11,7 +13,6 @@ Ball::Ball() : radius(10.f), start(true), speed(400.f) {
 
     srand(time(NULL));
 }
-
 
 void Ball::draw( sf::RenderTarget& target, sf::RenderStates states ) const  {
     target.draw(ball, states);
@@ -64,36 +65,48 @@ void Ball::Reposition( Utils::Sides side ) {
     ball.setPosition( newPos );
 }
 
+void Ball::ResetPos() {
+    ball.setPosition( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
+    moving = false;
+}
+
 void Ball::UpdateState( const sf::Time& dt ) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        Ball::ResetPos();
+
     if (start) {
-        // direc.x = 0;
-        // direc.y = (rand() % (Utils::HEIGHT));
+        direc.x = Utils::WIDTH;
+        direc.y = (rand() % (Utils::HEIGHT));
         
         // Target
-        direc.x = (rand() % (Utils::WIDTH));
-        direc.y = 0.f;
+        // direc.x = (rand() % (Utils::WIDTH));
+        // direc.y = 0.f;
         
         // calc direc
             // direc = target - curr
         direc -= ball.getPosition();
         unitDirec = Utils::Normalize(direc);
-        start = false;
-    } else {
-
+        start = false;   
+        moving = true;
     }
+    
+    if (moving)
+        ball.move( speed * dt.asSeconds() * unitDirec );
 
-    ball.move( speed * dt.asSeconds() * unitDirec );
 
-
-    if (CheckCollision()) {
-        // Utils::Reflect(this->direc, side);
-        Utils::Reflect(this->unitDirec, side);
-        // unitDirec = Utils::Normalize(direc);
-        // reposition
+    // if (CheckCollision()) {
+    //     // Utils::Reflect(this->direc, side);
+    //     Utils::Reflect(this->unitDirec, side);
+    //     // unitDirec = Utils::Normalize(direc);
+    //     // reposition
+    //     Reposition(side);
+    // }
+    if (Utils::checkWallColl(*this, side)) {
+        Utils::Reflect(unitDirec, side);
         Reposition(side);
     }
 }
 
-const sf::Vector2f Ball::getDirec() const {
-    return direc;
+sf::FloatRect Ball::getBounds() const {
+    return this->ball.getGlobalBounds();
 }

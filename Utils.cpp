@@ -3,6 +3,9 @@
 #include <math.h>
 #include <chrono>
 
+#include "Player.hpp"
+#include "Ball.hpp"
+
 int Utils::WIDTH = 720;
 int Utils::HEIGHT = 480;
 
@@ -40,6 +43,28 @@ void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
 
     // vect = Utils::Normalize(vect);
 }
+
+bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
+    sf::FloatRect pos = ball.getBounds();
+
+    if (pos.top <= 0) {
+        side = Utils::Sides::TOP;
+        return true;
+    } else if ((pos.top + pos.height) >= Utils::HEIGHT) {
+        side = Utils::Sides::BOTTOM;
+        return true;
+    } else if (pos.left <= 0) {
+        side = Utils::Sides::LEFT;
+        return true;
+    } else if ((pos.left + pos.width) >= Utils::WIDTH) {
+        side = Utils::Sides::RIGHT;
+        return true;
+    }
+
+    return false;
+}
+
+// void Utils::checkPlayColl( const Player& p1, const Player& p2 ) {}
 
 Utils::FrameRate::FrameRate()
     : accTime(sf::Time::Zero), frames(0), fps(0) {
