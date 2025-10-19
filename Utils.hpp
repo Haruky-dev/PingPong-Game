@@ -1,4 +1,7 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
+#include <map>
 
 class Utils {
     public:
@@ -7,19 +10,21 @@ class Utils {
         static int HEIGHT;
 
         static double EPSILON;
-            // Norms vect
-        static sf::Vector2f TOP;
-        static sf::Vector2f BOTTOM;
-        static sf::Vector2f LEFT;
-        static sf::Vector2f RIGHT;
 
+        // Norms vect
+            // Normal Vects on each side
+        enum class Sides {
+            TOP, LEFT, BOTTOM, RIGHT
+        };
+
+        static std::map<Utils::Sides, sf::Vector2f> Norms;
 
         // Math funcs
         static sf::Vector2f Normalize( const sf::Vector2f& vect );
 
         static const double Dot( const sf::Vector2f& vect1, const sf::Vector2f& vect2 );
 
-        static void Reflect( sf::Vector2f& vect, const sf::Vector2f& norm );
+        static void Reflect( sf::Vector2f& vect, Utils::Sides side );
 
         // FPS Counting
         class FrameRate : public sf::Drawable {

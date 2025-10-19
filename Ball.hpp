@@ -1,21 +1,23 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
+#include "Utils.hpp"
 
 
 // using Vect = std::vector<sf::Vector2f>;
 
 class Ball : public sf::Drawable {
     private:
-        bool start;
         sf::CircleShape ball;
-        int radius;
-        int speed;
-        sf::Vector2f side;
         sf::Vector2f direc;
         sf::Vector2f unitDirec;
         sf::Vector2f sPoint;
+        Utils::Sides side;
+        
+        int radius;
+        int speed;
+        bool start;
+        
 
     protected:
         virtual void draw( sf::RenderTarget& target, sf::RenderStates states ) const override;
@@ -23,7 +25,7 @@ class Ball : public sf::Drawable {
     public:
         Ball();
         bool CheckCollision();
-        void Reposition( sf::Vector2f& side );
+        void Reposition( Utils::Sides side );
         void UpdateState( const sf::Time& dt );
         const sf::Vector2f getDirec() const;
 };

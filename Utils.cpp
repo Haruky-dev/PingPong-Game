@@ -8,10 +8,12 @@ int Utils::HEIGHT = 480;
 
 double Utils::EPSILON = 1e-16;
 
-sf::Vector2f Utils::TOP(0.0f, -1.0f);
-sf::Vector2f Utils::BOTTOM(0.0f, 1.0f);
-sf::Vector2f Utils::LEFT(-1.0f, 0.0f);
-sf::Vector2f Utils::RIGHT(1.0f, 0.0f);
+std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
+    {Utils::Sides::TOP, {0.f, -1.f}},
+    {Utils::Sides::BOTTOM, {0.f, 1.f}},
+    {Utils::Sides::LEFT, {-1.f, 0.f}},
+    {Utils::Sides::RIGHT, {1.f, 0.f}},
+};
 
 sf::Vector2f Utils::Normalize( const sf::Vector2f& vect ) {
     const double M = std::sqrt( (vect.x * vect.x  +   vect.y * vect.y) ); // Magnitude
@@ -27,8 +29,8 @@ const double Utils::Dot( const sf::Vector2f& vect1, const sf::Vector2f& vect2 ) 
     return static_cast<double>( vect1.x*vect2.x  +  vect1.y*vect2.y );
 }
 
-void Utils::Reflect( sf::Vector2f& vect, const sf::Vector2f& norm ) {
-    sf::Vector2f n = Utils::Normalize(norm);
+void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
+    sf::Vector2f n = Utils::Normalize(Utils::Norms.at(side));
 
     if (n.x == 0.f && n.y == 0.f) return;
 
@@ -42,7 +44,7 @@ void Utils::Reflect( sf::Vector2f& vect, const sf::Vector2f& norm ) {
 Utils::FrameRate::FrameRate()
     : accTime(sf::Time::Zero), frames(0), fps(0) {
 
-        if (!font.loadFromFile("/home/Haruky/Documents/VSC/CPP/Projects/PingPong/Resources/arial.ttf"))
+        if (!font.loadFromFile("Resources/arialFont.ttf"))
             throw std::runtime_error("Unable to load Font");
 
         txt.setFont(font);
