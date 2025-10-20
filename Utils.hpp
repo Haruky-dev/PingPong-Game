@@ -24,16 +24,14 @@ class Utils {
 
         // Math funcs
         static sf::Vector2f Normalize( const sf::Vector2f& vect );
-
         static const double Dot( const sf::Vector2f& vect1, const sf::Vector2f& vect2 );
-
         static void Reflect( sf::Vector2f& vect, Utils::Sides side );
 
+        // Collision detect
         static bool checkWallColl( Ball& ball, Utils::Sides& side );
+        static bool checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils::Sides& side );
 
-        // static void checkPlayColl( const Player& p1, Player& p2 );
-
-        // FPS Counting
+        // FPS
         class FrameRate : public sf::Drawable {
             private:
                 sf::Text txt;

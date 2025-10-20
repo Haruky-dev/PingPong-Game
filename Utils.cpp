@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <chrono>
+#include <iostream>
 
 #include "Player.hpp"
 #include "Ball.hpp"
@@ -40,8 +41,6 @@ void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
     const double dotProd = Utils::Dot( vect, n );
     vect.x = vect.x - 2.f * dotProd * n.x;
     vect.y = vect.y - 2.f * dotProd * n.y;
-
-    // vect = Utils::Normalize(vect);
 }
 
 bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
@@ -53,18 +52,31 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     } else if ((pos.top + pos.height) >= Utils::HEIGHT) {
         side = Utils::Sides::BOTTOM;
         return true;
-    } else if (pos.left <= 0) {
-        side = Utils::Sides::LEFT;
-        return true;
-    } else if ((pos.left + pos.width) >= Utils::WIDTH) {
+    } 
+
+    // 
+    else if ((pos.left <= 0) || ((pos.left + pos.width) >= Utils::WIDTH))
+        ball.ResetPos();
+
+    return false;
+}
+
+bool Utils::checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils::Sides& side ) {
+    if (! (&p1 && &p2))
+        throw std::runtime_error("Error Occured! Insufficient number of Player.");
+
+    if (p1.getBounds().intersects(ball.getBounds())) {
         side = Utils::Sides::RIGHT;
+        return true;
+    }
+
+    else if (p2.getBounds().intersects(ball.getBounds())) {
+        side = Utils::Sides::LEFT;
         return true;
     }
 
     return false;
 }
-
-// void Utils::checkPlayColl( const Player& p1, const Player& p2 ) {}
 
 Utils::FrameRate::FrameRate()
     : accTime(sf::Time::Zero), frames(0), fps(0) {

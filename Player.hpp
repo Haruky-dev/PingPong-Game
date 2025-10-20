@@ -20,4 +20,5 @@ class Player : public sf::Drawable {
     
         Player( const sf::Color& mainColor, const sf::Color& secColor);
         void UpdateState( sf::Time& dt);
+        sf::FloatRect getBounds() const;
 };

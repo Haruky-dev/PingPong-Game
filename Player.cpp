@@ -44,6 +44,7 @@ void Player::UpdateState( sf::Time& dt) {
             if (Y_pos + height/2.f < Utils::HEIGHT)
                 bar.move( 0, speed * dt.asSeconds() );
         }
+        
     // WASD
     } else {
         if ( sf::Keyboard::isKeyPressed( sf::Keyboard::W ) ) {
@@ -59,4 +60,8 @@ void Player::UpdateState( sf::Time& dt) {
 
 void Player::draw( sf::RenderTarget& target, sf::RenderStates states ) const {
     target.draw( bar, states );
+}
+
+sf::FloatRect Player::getBounds() const {
+    return this->bar.getGlobalBounds();
 }

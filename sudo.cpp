@@ -9,7 +9,7 @@
 int main( void ) {
     sf::RenderWindow win( sf::VideoMode( Utils::WIDTH, Utils::HEIGHT ), "PingPong");
 
-    sf::Time deltaTime = sf::Time::Zero;
+    sf::Time dt = sf::Time::Zero;
     sf::Clock Clk;
     Utils::FrameRate F;
 
@@ -18,10 +18,12 @@ int main( void ) {
 
     Player p1( sf::Color::Yellow, sf::Color::White );
     Player p2( sf::Color::Cyan, sf::Color::White );
+
     Ball ball;
+    ball.setPlayers( p1, p2 );
 
     while ( win.isOpen() ) {
-        deltaTime = Clk.restart();
+        dt = Clk.restart();
         
         sf::Event ev;
         while ( win.pollEvent(ev) )
@@ -30,14 +32,14 @@ int main( void ) {
 
         if ( accTime.asSeconds() >= delay ) {
             accTime = sf::Time::Zero;
-            std::cout<< sf::Mouse::getPosition(win).x << ' ' << sf::Mouse::getPosition(win).y << '\n';
+            // std::cout<< sf::Mouse::getPosition(win).x << ' ' << sf::Mouse::getPosition(win).y << '\n';
             // std::cout<< ball.getDirec().x << ' ' << ball.getDirec().y << '\n';
-        }   accTime += deltaTime;
+        }   accTime += dt;
                 
-        F.UpdateState(deltaTime);
-        p1.UpdateState(deltaTime);
-        p2.UpdateState(deltaTime);
-        ball.UpdateState(deltaTime);
+        F.UpdateState(dt);
+        p1.UpdateState(dt);
+        p2.UpdateState(dt);
+        ball.UpdateState(dt);
 
 
         win.clear();

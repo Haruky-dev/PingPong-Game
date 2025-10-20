@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Utils.hpp"
 
-// using Vect = std::vector<sf::Vector2f>;
+class Player;
 
 class Ball : public sf::Drawable {
     private:
@@ -12,6 +12,9 @@ class Ball : public sf::Drawable {
         sf::Vector2f unitDirec;
         sf::Vector2f sPoint;
         Utils::Sides side;
+
+        Player* EastP;
+        Player* WestP;
         
         int radius;
         int speed;
@@ -24,8 +27,9 @@ class Ball : public sf::Drawable {
 
     public:
         Ball();
-        bool CheckCollision();
-        void Reposition( Utils::Sides side );
+        void LauchBall();
+        void setPlayers( Player& p1, Player& p2 );
+        void AdjustPos( Utils::Sides side );
         void ResetPos();
         void UpdateState( const sf::Time& dt );
 
