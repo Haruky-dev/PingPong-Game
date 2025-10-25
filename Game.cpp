@@ -1,5 +1,7 @@
 #include "Game.hpp"
 
+#include "Assets.hpp"
+
 #include <print>
 
 Game::Game() : F() {
@@ -10,7 +12,7 @@ Game::Game() : F() {
 
     dt = sf::Time::Zero;
     clk = sf::Clock();
-    
+
     P1 = std::make_unique<Player>( 
         sf::Color::Yellow, sf::Color::White
     );
@@ -23,13 +25,19 @@ Game::Game() : F() {
 
 }
 
+// handl resources loading
+void Game::load() {
+    // loading
+    // Assets& inst = Assets::getInstance();
 
-void Game::load() {}
+    Assets::getInstance().loadResources();
+    std::println("Resources Loaded!");
+
+}
 
 void Game::run() {
 
     while ( win->isOpen() ) {
-
 
         dt = clk.restart();
 
@@ -44,9 +52,10 @@ void Game::run() {
         P2->UpdateState( dt );
         ball->UpdateState( dt );
 
-
         win->clear();
 
+        win->draw( Assets::getInstance().getBg() );
+        // win->draw( Assets::getInstance().getBall() );
         win->draw( *P1 );
         win->draw( *P2 );
         win->draw( *ball );
