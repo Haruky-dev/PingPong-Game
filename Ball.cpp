@@ -2,30 +2,36 @@
 
 #include "Utils.hpp"
 #include "Player.hpp"
+#include "Assets.hpp"
 
 #include <iostream>
 #include <math.h>
 
 Ball::Ball()
-    : radius(10.f), start(true), speed(400.f),
+    : radius(10.f), start(false), speed(400.f),
       moving(false), EastP(nullptr), WestP(nullptr) {
 
         ball.setRadius( radius );
         ball.setFillColor( sf::Color::White );
-        ball.setPosition( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
+        ball.setOrigin( radius, radius );
 
+        this->ResetPos();
+        // ball.setPosition( *(Assets::getInst().getBgCtr()) );
+
+        // !! make better random system on utils
         srand(time(NULL));
 }
 
-void Ball::LauchBall() {
+void Ball::LaunchBall() {
     // target
     direc.x = 0.0f;
+    // randPoint = (rand() % (end - start + 1)) + start
     direc.y = (rand() % (Utils::HEIGHT));
+    // direc.y = (rand() % (static_cast<int>(Utils::HEIGHT/2.f) + 1)) + Utils::HEIGHT/2.f;
+    // direc.y = (rand() % (static_cast<int>(Utils::HEIGHT) + 1)) + Utils::HEIGHT/2.f;
 
     // direction = targetPos - currPos;
     direc -= ball.getPosition();
-    // direc.x = (rand() % (Utils::WIDTH));
-    // direc.y = 0.f;       
 
     unitDirec = Utils::Normalize(direc);
     moving = true;
@@ -51,13 +57,16 @@ void Ball::AdjustPos( Utils::Sides side ) {
 
     // hits top/bottom walls
     if (side == Utils::Sides::TOP)
-        newBallPos.y = BallBounds.top;
+        // newBallPos.y = BallBounds.top + this->radius;
+        // newBallPos.y = BallBounds.height - this->radius;
+        newBallPos.y = this->radius;
     else if (side == Utils::Sides::BOTTOM)
         newBallPos.y = Utils::HEIGHT - BallBounds.height;
     
     // Resolve sticking for player case
     else if (side == Utils::Sides::LEFT)
-        newBallPos.x = BallBounds.left + PlayBounds.width + 5.0f; // I couldn't find a way other than hard code it :)
+        newBallPos.x = PlayBounds.width + 35.0f;
+        // newBallPos.x = BallBounds.left + PlayBounds.width + 5.0f; // I couldn't find a way other than hard code it :)
     else if (side == Utils::Sides::RIGHT)
         newBallPos.x = Utils::WIDTH - PlayBounds.width - 35.0f; // so as that :)
     
@@ -65,7 +74,8 @@ void Ball::AdjustPos( Utils::Sides side ) {
 }
 
 void Ball::ResetPos() {
-    ball.setPosition( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
+    // ball.setPosition( *(Assets::getInst().getBgCtr()) );
+    ball.setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
     moving = false;
 }
 
@@ -74,7 +84,7 @@ void Ball::UpdateState( const sf::Time& dt ) {
         Ball::ResetPos();
 
     if (start) {
-        this->LauchBall();
+        this->LaunchBall();
         start = false;
     }
     

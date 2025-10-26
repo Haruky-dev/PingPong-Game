@@ -1,8 +1,6 @@
 #include "Utils.hpp"
 
 #include <math.h>
-#include <chrono>
-#include <iostream>
 
 #include "Player.hpp"
 #include "Ball.hpp"

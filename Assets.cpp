@@ -1,12 +1,16 @@
 #include "Assets.hpp"
 
-Assets& Assets::getInstance() {
-    static Assets inst;
+#include "Utils.hpp"
+
+// returns pointer to the singleton instance
+Assets& Assets::getInst() {
+    static Assets inst = Assets();
+    
     return inst;
 }
 
 // std::string Assets::FONT = "Resources/arialFont.ttf";
-std::string Assets::BG   = "Resources/gameBg.png";
+std::string Assets::BG = "Resources/gameBg.png";
 // std::string Assets::BALL = "Resources/ball2.png";
 
 void Assets::loadResources() {
@@ -36,8 +40,15 @@ void Assets::loadResources() {
     // if ( !(ballText->loadFromFile(BALL)) )
     //     throw std::runtime_error("UNABLE TO LOAD [BALL] TEXTURE!");
 
-    // // set Sprites
-    // bgSprite->setTexture( *bgText );
+    // set Sprites
+    bgSprite->setTexture( *bgText );
+    // bgSprite->setScale( 
+    //     static_cast<double>(Utils::WIDTH) / bgText->getSize().x,
+    //     static_cast<double>(Utils::HEIGHT) / bgText->getSize().y
+    // );
+    // bgSprite->setOrigin( bgText->getSize().x/2.f, bgText->getSize().y/2.f);
+    // bgSprite->setPosition( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
+    // bgSprite->setOrigin( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
     // // padSprite->setTexture( *padText );
     // ballSprite->setTexture( *ballText );
 

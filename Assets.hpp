@@ -13,8 +13,6 @@ class Assets {
         Assets& operator=(Assets& other) = delete;
 
         // sf::Font font;
-        // is it better to use them as static members or to have an accessing function? 
-        // answer: accessing function
         std::unique_ptr<sf::Texture> bgText;
         // std::unique_ptr<sf::Texture> padText;
         // std::unique_ptr<sf::Texture> ballText;
@@ -29,11 +27,12 @@ class Assets {
         // static std::string BALL;
 
     public:
-        static Assets& getInstance();
+        // Singleton Accessor
+        static Assets& getInst();
         void loadResources();
 
         // getters
         sf::Sprite& getBg()   const;
-        // sf::Sprite& getPad()  const;
+        // sf::Spri./gate& getPad()  const;
         // sf::Sprite& getBall() const;
 };

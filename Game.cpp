@@ -2,7 +2,7 @@
 
 #include "Assets.hpp"
 
-#include <print>
+#include <iostream>
 
 Game::Game() : F() {
 
@@ -12,30 +12,35 @@ Game::Game() : F() {
 
     dt = sf::Time::Zero;
     clk = sf::Clock();
-
-    P1 = std::make_unique<Player>( 
-        sf::Color::Yellow, sf::Color::White
-    );
-    P2 = std::make_unique<Player>( 
-        sf::Color::Cyan, sf::Color::White
-    );
-    
-    ball = std::make_unique<Ball>();
-    ball->setPlayers( *P1, *P2 );
-
 }
 
 // handl resources loading
 void Game::load() {
     // loading
-    // Assets& inst = Assets::getInstance();
 
-    Assets::getInstance().loadResources();
-    std::println("Resources Loaded!");
+    // load data
+    Assets::getInst().loadResources();
 
+    // create players
+    Game::P1 = std::make_unique<Player>(
+        sf::Color::Yellow, sf::Color::White
+    );
+
+    Game::P2 = std::make_unique<Player>(
+        sf::Color::Cyan, sf::Color::White
+    );
+
+    // create ball
+    ball = std::make_unique<Ball>();
+    ball->setPlayers( *P1, *P2 );
 }
 
 void Game::run() {
+
+    this->load();
+
+    // for DBG msgs
+    // sf::Time accTime = sf::Time::Zero;
 
     while ( win->isOpen() ) {
 
@@ -46,7 +51,13 @@ void Game::run() {
             if ((ev.type == sf::Event::Closed) ||
                 (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) )
                     win->close();
-                   
+        
+        // DBG
+        // if (accTime.asSeconds() >= 0.5f) {
+        //     accTime = sf::Time::Zero;
+        //     std::cout<< sf::Mouse::getPosition( *win ).x << ' ' << sf::Mouse::getPosition( *win ).y << '\n';
+        // } accTime += dt;
+
         F.UpdateState( dt );
         P1->UpdateState( dt );
         P2->UpdateState( dt );
@@ -54,8 +65,7 @@ void Game::run() {
 
         win->clear();
 
-        win->draw( Assets::getInstance().getBg() );
-        // win->draw( Assets::getInstance().getBall() );
+        win->draw( Assets::getInst().getBg() );
         win->draw( *P1 );
         win->draw( *P2 );
         win->draw( *ball );

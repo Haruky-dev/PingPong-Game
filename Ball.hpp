@@ -27,7 +27,7 @@ class Ball : public sf::Drawable {
 
     public:
         Ball();
-        void LauchBall();
+        void LaunchBall();
         void setPlayers( Player& p1, Player& p2 );
         void AdjustPos( Utils::Sides side );
         void ResetPos();
