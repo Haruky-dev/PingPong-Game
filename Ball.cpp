@@ -4,16 +4,20 @@
 #include "Player.hpp"
 #include "Assets.hpp"
 
-#include <iostream>
+#include <print>
 #include <math.h>
 
-Ball::Ball()
-    : radius(10.f), start(false), speed(400.f),
+Ball::Ball( const sf::Sprite& spr )
+    : start(false), speed(400.f), accTime(sf::Time::Zero),
       moving(false), EastP(nullptr), WestP(nullptr) {
 
-        ball.setRadius( radius );
-        ball.setFillColor( sf::Color::White );
-        ball.setOrigin( radius, radius );
+
+        // ball.setRadius( radius );
+        // ball.setFillColor( sf::Color::White );
+        // ball.setOrigin( radius, radius );
+        this->ball = spr;
+        auto tempS = spr.getTexture()->getSize();
+        this->ball.setOrigin( tempS.x /2.0f, tempS.y /2.0f );
 
         this->ResetPos();
         // ball.setPosition( *(Assets::getInst().getBgCtr()) );
@@ -58,10 +62,10 @@ void Ball::AdjustPos( Utils::Sides side ) {
     // hits top/bottom walls
     if (side == Utils::Sides::TOP)
         // newBallPos.y = BallBounds.top + this->radius;
-        // newBallPos.y = BallBounds.height - this->radius;
-        newBallPos.y = this->radius;
+        // newBallPos.y = this->radius + 12.0f; // 12px of the bg edge
+        newBallPos.y = BallBounds.width/2.0f + 12.0f;
     else if (side == Utils::Sides::BOTTOM)
-        newBallPos.y = Utils::HEIGHT - BallBounds.height;
+        newBallPos.y = Utils::HEIGHT - BallBounds.height - 12.0f;
     
     // Resolve sticking for player case
     else if (side == Utils::Sides::LEFT)
@@ -79,6 +83,15 @@ void Ball::ResetPos() {
     moving = false;
 }
 
+void Ball::Rotate( const sf::Time& dt ) {
+    if (moving)
+        if ( accTime.asMilliseconds() >= 50.0f ) {
+            accTime = sf::Time::Zero;
+            ball.rotate(10.0f);
+        }
+        else accTime+= dt;
+}
+
 void Ball::UpdateState( const sf::Time& dt ) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         Ball::ResetPos();
@@ -88,8 +101,10 @@ void Ball::UpdateState( const sf::Time& dt ) {
         start = false;
     }
     
-    if (moving)
+    if (moving) {
+        Rotate( dt );
         ball.move( speed * dt.asSeconds() * unitDirec );
+    }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
         start = true;
     }

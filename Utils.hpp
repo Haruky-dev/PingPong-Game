@@ -7,10 +7,15 @@ class Ball;
 class Player;
 
 class Utils {
+
     public:
+        static int P1_SCORE;
+        static int P2_SCORE;
+        static bool changeScore;
         // Constants
         static int WIDTH;
         static int HEIGHT;
+
 
         static double EPSILON;
 
@@ -29,6 +34,7 @@ class Utils {
 
         // Collision detect
         static bool checkWallColl( Ball& ball, Utils::Sides& side );
+
         static bool checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils::Sides& side );
 
         // FPS
@@ -51,4 +57,3 @@ class Utils {
                 void UpdateState( sf::Time& dt );
         };
 };
-

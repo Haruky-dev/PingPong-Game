@@ -1,13 +1,16 @@
 #include "Player.hpp"
-#include "Utils.hpp"
 
-#include <iostream>
+#include "Utils.hpp"
+#include "Assets.hpp"
 
 int Player::playersCount = 0;
 
-Player::Player(const sf::Color &mainColor, const sf::Color &secColor)
-    : width(8), height(50), speed(450.f)
-{
+Player::Player( const sf::Sprite& spr ) : speed(500.f), score(0) {
+
+    this->bar = spr;
+    auto tempS = spr.getTexture()->getSize();
+    this->bar.setOrigin( tempS.x /2.0f, tempS.y /2.0f );
+
     playersCount++;
 
     // check #Players. Assign IDs
@@ -18,18 +21,15 @@ Player::Player(const sf::Color &mainColor, const sf::Color &secColor)
         this->id = 1;
     } else {
         this->id = 2;
+        this->bar.setRotation( 180.0f );
     }
-
-    bar.setSize( sf::Vector2f( width, height ));
-    bar.setOrigin( width/2.f, height/2.f );
-    bar.setFillColor( mainColor );
-    bar.setOutlineThickness( 2.f );
-    bar.setOutlineColor( secColor );
 
     if ( this->id == 1 )
         bar.setPosition( Utils::WIDTH - 20.f, Utils::HEIGHT/2.f );
     else
         bar.setPosition( 20.f, Utils::HEIGHT/2.f );
+
+    // scoreTxt.loadFromFile( Assets::SCORE[ this->score ] );
 }
 
 void Player::UpdateState( sf::Time& dt) {
@@ -38,25 +38,24 @@ void Player::UpdateState( sf::Time& dt) {
     // Arrows
     if (this->id == 1) {
         if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Up ) ) {
-            if ( Y_pos - height/2.f > 0)
+            if ( Y_pos - getBounds().height/2.f > 14.0f)
                 bar.move( 0, - speed * dt.asSeconds() );
         } if ( sf::Keyboard::isKeyPressed( sf::Keyboard::Down ) ) {
-            if (Y_pos + height/2.f < Utils::HEIGHT)
+            if (Y_pos + getBounds().height/2.f < Utils::HEIGHT - 14.0f)
                 bar.move( 0, speed * dt.asSeconds() );
         }
         
     // WASD
     } else {
         if ( sf::Keyboard::isKeyPressed( sf::Keyboard::W ) ) {
-            if ( Y_pos - height/2.f > 0)
+            if ( Y_pos - 25.0f > 14.0f)
                 bar.move( 0, - speed * dt.asSeconds() );
         } if ( sf::Keyboard::isKeyPressed( sf::Keyboard::S ) ) {
-            if (Y_pos + height/2.f < Utils::HEIGHT)
+            if (Y_pos + 25.0f < Utils::HEIGHT - 14.0f)
                 bar.move( 0, speed * dt.asSeconds() );
         }
     }
 }
-
 
 void Player::draw( sf::RenderTarget& target, sf::RenderStates states ) const {
     target.draw( bar, states );
@@ -64,4 +63,18 @@ void Player::draw( sf::RenderTarget& target, sf::RenderStates states ) const {
 
 sf::FloatRect Player::getBounds() const {
     return this->bar.getGlobalBounds();
+}
+
+// void Player::incScore( const int id ) {
+//     if ( score > 4 )
+//         score = 0;
+//     else if ( score >= 0 )
+//         score++;
+// }
+
+// void Player::resetScore() const {
+//     score = 0;
+// }
+
+void Player::getScore() {
 }

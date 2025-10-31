@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <memory>
+#include <vector>
 #include <string>
 
 class Assets {
@@ -14,25 +15,37 @@ class Assets {
 
         // sf::Font font;
         std::unique_ptr<sf::Texture> bgText;
-        // std::unique_ptr<sf::Texture> padText;
-        // std::unique_ptr<sf::Texture> ballText;
+        std::unique_ptr<sf::Texture> padText;
+        std::unique_ptr<sf::Texture> ballText;
         std::unique_ptr<sf::Sprite> bgSprite;
-        // std::unique_ptr<sf::Sprite> padSprite;
-        // std::unique_ptr<sf::Sprite> ballSprite;
+        std::unique_ptr<sf::Sprite> padSprite;
+        std::unique_ptr<sf::Sprite> ballSprite;
+        std::unique_ptr<sf::Sprite> scoreSprite;
+        std::unique_ptr<sf::Sprite> scoreSprite1;
+
+        std::unique_ptr<sf::Texture> SCORE_TEXTS[6];
 
         // paths
         // static std::string FONT; // = "Resources/arialFont.ttf";
-        static std::string BG;   // = "Resources/game-bg.png";
-        // static std::string PAD  = "";
-        // static std::string BALL;
-
+        static std::string BG;
+        static std::string PAD;
+        static std::string BALL;
+        // static std::vector<std::string> SCORE;
+        // static inline std::unique_ptr<std::string[]> SCORE;
+        
     public:
         // Singleton Accessor
         static Assets& getInst();
         void loadResources();
 
+        static std::string SCORE[6];
+
         // getters
         sf::Sprite& getBg()   const;
-        // sf::Spri./gate& getPad()  const;
-        // sf::Sprite& getBall() const;
+        sf::Sprite& getPad()  const;
+        sf::Sprite& getBall() const;
+        sf::Sprite& getScore( const int id ) const;
+
+        // setters
+        // void setScore( const int id, const int score ) const;
 };

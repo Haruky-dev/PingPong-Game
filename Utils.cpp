@@ -2,13 +2,34 @@
 
 #include <math.h>
 
+#include <iostream>
+
 #include "Player.hpp"
 #include "Ball.hpp"
 
 int Utils::WIDTH = 720;
 int Utils::HEIGHT = 480;
 
+int Utils::P1_SCORE = 0;
+int Utils::P2_SCORE = 0;
+
+bool Utils::changeScore = 0;
+
 double Utils::EPSILON = 1e-16;
+
+
+// void Utils::incScore( int& PlayerScore ) {
+//     if (PlayerScore > 6)
+//         // game over situation
+//         // std::println( "INVALID SCORE VALUE REACHED, GAME OVER!" );
+//         throw std::runtime_error(" Score Reached Invalid Value! ");
+        
+//     else if (PlayerScore >= 0)
+//         throw std::runtime_error(" Score Reached Invalid [NEGATIVE] Value! ");
+ 
+//     // valid val => inc
+//     PlayerScore++;
+// }
 
 std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
     {Utils::Sides::TOP, {0.f, -1.f}},
@@ -44,17 +65,39 @@ void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
 bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     sf::FloatRect pos = ball.getBounds();
 
-    if (pos.top <= 0) {
+    if (pos.top <= 12.f) { // 12px of the background edge
         side = Utils::Sides::TOP;
         return true;
-    } else if ((pos.top + pos.height) >= Utils::HEIGHT) {
+    } else if ((pos.top + pos.height) >= Utils::HEIGHT - 12.0f) {
         side = Utils::Sides::BOTTOM;
         return true;
     } 
 
-    // 
-    else if ((pos.left <= 0) || ((pos.left + pos.width) >= Utils::WIDTH))
+    // goal case
+    if ( pos.left <= 0 ) {
+            changeScore = true;
         ball.ResetPos();
+
+        if (Utils::P2_SCORE > 5)
+            throw std::runtime_error("Game Over. Invalid Value Reached");
+        
+        Utils::P2_SCORE++;
+    }
+    else if ((pos.left + pos.width) >= Utils::WIDTH) {
+        changeScore = true;
+        ball.ResetPos();
+
+        if (Utils::P1_SCORE > 5)
+            throw std::runtime_error("Game Over. Invalid Value Reached" );
+    
+        Utils::P1_SCORE++;
+    }
+    
+    changeScore = false;
+
+    // else if ((pos.left <= 0) || ((pos.left + pos.width) >= Utils::WIDTH)) {
+    //     ball.ResetPos();
+    // }
 
     return false;
 }
@@ -84,8 +127,9 @@ Utils::FrameRate::FrameRate()
 
         txt.setFont(font);
         txt.setString( " FPS: [] " );
-        txt.setScale( 0.5f, 0.5f );
-        txt.setFillColor( sf::Color::Green );
+        txt.setScale( 0.4f, 0.4f );
+        // txt.setFillColor( sf::Color::Green);
+        txt.setFillColor( sf::Color(255, 165, 171) );
         Utils::FrameRate::centerText();
 
 }
@@ -96,6 +140,10 @@ void Utils::FrameRate::UpdateState( sf::Time& dt ) {
 
     if (accTime.asSeconds() >= 0.5f ) { // 0.5 === delay time
         fps = static_cast<int>( frames / accTime.asSeconds() );
+
+        // DBG
+        // std::cout << fps << ", ";
+
         txt.setString( "FPS [" + std::to_string( fps ) + ']' );
         Utils::FrameRate::centerText();
 
@@ -108,7 +156,7 @@ void Utils::FrameRate::centerText() {
     auto bounds = Utils::FrameRate::txt.getLocalBounds();
     sf::Vector2f len = {bounds.width, bounds.height};
     txt.setOrigin( len/2.f);
-    txt.setPosition(Utils::WIDTH/2.f, 10.f);
+    txt.setPosition(Utils::WIDTH/2.f, Utils::HEIGHT - 10.f);
 }
 
 void Utils::FrameRate::draw( sf::RenderTarget& target, sf::RenderStates states ) const {

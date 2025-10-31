@@ -2,15 +2,17 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <memory>
+
 class Player : public sf::Drawable {
     private:
-        static int playersCount;
-        int id;
-        sf::RectangleShape bar;
-        int width;
-        int height;
+        sf::Sprite bar;
+        // sf::Texture scoreTxt;
         double speed;
 
+        static int playersCount;
+        int score;
+        
         
         
     protected:
@@ -18,7 +20,12 @@ class Player : public sf::Drawable {
         
     public:
     
-        Player( const sf::Color& mainColor, const sf::Color& secColor);
+        int id;
+        Player( const sf::Sprite& spr );
         void UpdateState( sf::Time& dt);
         sf::FloatRect getBounds() const;
+        // static void incScore( const int id );
+        // static void resetScore() const;
+
+        void getScore();
 };
