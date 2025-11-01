@@ -14,18 +14,15 @@ Game::Game() : F() {
     clk = sf::Clock();
 }
 
-// handl resources loading
+// handle resources loading
 void Game::load() {
-    // loading
-
     // load data
+
     Assets::getInst().loadResources();
 
     // create players
     Game::P1 = std::make_unique<Player>( Assets::getInst().getPad() );
-        // P1->id = 1;
-        Game::P2 = std::make_unique<Player>( Assets::getInst().getPad() );
-        // P2->id = 2;
+    Game::P2 = std::make_unique<Player>( Assets::getInst().getPad() );
 
     // create ball
     Game::ball = std::make_unique<Ball>( Assets::getInst().getBall() );
@@ -37,7 +34,7 @@ void Game::run() {
     this->load();
 
     // for DBG msgs
-    sf::Time accTime = sf::Time::Zero;
+    // sf::Time accTime = sf::Time::Zero;
 
     while ( win->isOpen() ) {
 
@@ -50,12 +47,12 @@ void Game::run() {
                     win->close();
         
         // DBG
-        if (accTime.asSeconds() >= 0.5f) {
-            accTime = sf::Time::Zero;
-            // std::cout<< sf::Mouse::getPosition( *win ).x << ' ' << sf::Mouse::getPosition( *win ).y << '\n';
-            P1->getScore();
-            P2->getScore();
-        } accTime += dt;
+        // if (accTime.asSeconds() >= 0.5f) {
+        //     accTime = sf::Time::Zero;
+        //     // std::cout<< sf::Mouse::getPosition( *win ).x << ' ' << sf::Mouse::getPosition( *win ).y << '\n';
+        //     P1->getScore();
+        //     P2->getScore();
+        // } accTime += dt;
 
         F.UpdateState( dt );
         P1->UpdateState( dt );
@@ -65,12 +62,8 @@ void Game::run() {
         win->clear();
 
         win->draw( Assets::getInst().getBg() );
-
-        // I want to do something like:
-            // win->draw ( P1->getScore() );
         win->draw( Assets::getInst().getScore(1) );
         win->draw( Assets::getInst().getScore(2) );
-        
         win->draw( *P1 );
         win->draw( *P2 );
         win->draw( *ball );

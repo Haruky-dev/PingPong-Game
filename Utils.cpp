@@ -18,19 +18,6 @@ bool Utils::changeScore = 0;
 double Utils::EPSILON = 1e-16;
 
 
-// void Utils::incScore( int& PlayerScore ) {
-//     if (PlayerScore > 6)
-//         // game over situation
-//         // std::println( "INVALID SCORE VALUE REACHED, GAME OVER!" );
-//         throw std::runtime_error(" Score Reached Invalid Value! ");
-        
-//     else if (PlayerScore >= 0)
-//         throw std::runtime_error(" Score Reached Invalid [NEGATIVE] Value! ");
- 
-//     // valid val => inc
-//     PlayerScore++;
-// }
-
 std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
     {Utils::Sides::TOP, {0.f, -1.f}},
     {Utils::Sides::BOTTOM, {0.f, 1.f}},
@@ -94,10 +81,6 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     }
     
     changeScore = false;
-
-    // else if ((pos.left <= 0) || ((pos.left + pos.width) >= Utils::WIDTH)) {
-    //     ball.ResetPos();
-    // }
 
     return false;
 }

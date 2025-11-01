@@ -7,11 +7,9 @@ class Player;
 
 class Ball : public sf::Drawable {
     private:
-        // sf::CircleShape ball;
         sf::Sprite ball;
         sf::Vector2f direc;
         sf::Vector2f unitDirec;
-        sf::Vector2f sPoint;
         Utils::Sides side;
 
         sf::Time accTime;
@@ -19,7 +17,6 @@ class Ball : public sf::Drawable {
         Player* EastP;
         Player* WestP;
         
-        // int radius;
         int speed;
         bool start;
         bool moving;

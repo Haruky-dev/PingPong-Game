@@ -45,7 +45,4 @@ class Assets {
         sf::Sprite& getPad()  const;
         sf::Sprite& getBall() const;
         sf::Sprite& getScore( const int id ) const;
-
-        // setters
-        // void setScore( const int id, const int score ) const;
 };

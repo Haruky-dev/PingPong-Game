@@ -7,7 +7,6 @@
 class Player : public sf::Drawable {
     private:
         sf::Sprite bar;
-        // sf::Texture scoreTxt;
         double speed;
 
         static int playersCount;
@@ -24,8 +23,4 @@ class Player : public sf::Drawable {
         Player( const sf::Sprite& spr );
         void UpdateState( sf::Time& dt);
         sf::FloatRect getBounds() const;
-        // static void incScore( const int id );
-        // static void resetScore() const;
-
-        void getScore();
 };

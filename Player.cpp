@@ -28,8 +28,6 @@ Player::Player( const sf::Sprite& spr ) : speed(500.f), score(0) {
         bar.setPosition( Utils::WIDTH - 20.f, Utils::HEIGHT/2.f );
     else
         bar.setPosition( 20.f, Utils::HEIGHT/2.f );
-
-    // scoreTxt.loadFromFile( Assets::SCORE[ this->score ] );
 }
 
 void Player::UpdateState( sf::Time& dt) {
@@ -63,18 +61,4 @@ void Player::draw( sf::RenderTarget& target, sf::RenderStates states ) const {
 
 sf::FloatRect Player::getBounds() const {
     return this->bar.getGlobalBounds();
-}
-
-// void Player::incScore( const int id ) {
-//     if ( score > 4 )
-//         score = 0;
-//     else if ( score >= 0 )
-//         score++;
-// }
-
-// void Player::resetScore() const {
-//     score = 0;
-// }
-
-void Player::getScore() {
 }

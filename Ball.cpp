@@ -8,19 +8,14 @@
 #include <math.h>
 
 Ball::Ball( const sf::Sprite& spr )
-    : start(false), speed(400.f), accTime(sf::Time::Zero),
+    : start(false), speed(300.f), accTime(sf::Time::Zero),
       moving(false), EastP(nullptr), WestP(nullptr) {
 
-
-        // ball.setRadius( radius );
-        // ball.setFillColor( sf::Color::White );
-        // ball.setOrigin( radius, radius );
         this->ball = spr;
         auto tempS = spr.getTexture()->getSize();
         this->ball.setOrigin( tempS.x /2.0f, tempS.y /2.0f );
 
         this->ResetPos();
-        // ball.setPosition( *(Assets::getInst().getBgCtr()) );
 
         // !! make better random system on utils
         srand(time(NULL));
@@ -58,29 +53,30 @@ void Ball::AdjustPos( Utils::Sides side ) {
     sf::FloatRect PlayBounds = EastP->getBounds();
     sf::Vector2f newBallPos = ball.getPosition();
 
-
     // hits top/bottom walls
     if (side == Utils::Sides::TOP)
         // newBallPos.y = BallBounds.top + this->radius;
         // newBallPos.y = this->radius + 12.0f; // 12px of the bg edge
         newBallPos.y = BallBounds.width/2.0f + 12.0f;
     else if (side == Utils::Sides::BOTTOM)
-        newBallPos.y = Utils::HEIGHT - BallBounds.height - 12.0f;
+        newBallPos.y = Utils::HEIGHT - BallBounds.height/2.0f - 12.0f;
     
     // Resolve sticking for player case
     else if (side == Utils::Sides::LEFT)
-        newBallPos.x = PlayBounds.width + 35.0f;
+        newBallPos.x = PlayBounds.width/2.0f + 35.0f;
         // newBallPos.x = BallBounds.left + PlayBounds.width + 5.0f; // I couldn't find a way other than hard code it :)
     else if (side == Utils::Sides::RIGHT)
-        newBallPos.x = Utils::WIDTH - PlayBounds.width - 35.0f; // so as that :)
+        newBallPos.x = Utils::WIDTH - PlayBounds.width/2.0f - 35.0f; // so as that :)
     
+    this->speed += 20;
+
     ball.setPosition( newBallPos );
 }
 
 void Ball::ResetPos() {
-    // ball.setPosition( *(Assets::getInst().getBgCtr()) );
     ball.setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
     moving = false;
+    this->speed = 300.0f;
 }
 
 void Ball::Rotate( const sf::Time& dt ) {

@@ -4,7 +4,7 @@
 
 #include <print>
 
-// returns pointer to the singleton instance
+// returns reff to the singleton instance
 Assets& Assets::getInst() {
     static Assets inst = Assets();
     
@@ -17,27 +17,15 @@ std::string Assets::PAD = "Resources/paddle.png";
 std::string Assets::BALL = "Resources/ball3.png";
 
 std::string Assets::SCORE[6] = {
-    "Resources/0.png",
-    "Resources/1.png",
-    "Resources/2.png",
-    "Resources/3.png",
-    "Resources/4.png",
-    "Resources/5.png"    
+    "Resources/zero.png",
+    "Resources/one.png",
+    "Resources/two.png",
+    "Resources/three.png",
+    "Resources/four.png",
+    "Resources/five.png"    
 };
 
 // Assets::SCORE = std::make_unique<std::string[]>(6);
-
-// for (int i = 0; i<6; ++i)
-//     Assets::SCORE[i] = "Resources/" + std::to_string(i) + ".png";
-// Assets::SCORE = {
-//     "Resources/zero.png",
-//     "Resources/one.png",
-//     "Resources/two.png",
-//     "Resources/three.png",
-//     "Resources/four.png",
-//     "Resources/five.png"
-// };
-
 
 void Assets::loadResources() {
     // // load font
@@ -49,10 +37,10 @@ void Assets::loadResources() {
     padText   = std::make_unique<sf::Texture>();
     ballText  = std::make_unique<sf::Texture>();
 
-    bgSprite    = std::make_unique<sf::Sprite>();
-    padSprite   = std::make_unique<sf::Sprite>();
-    ballSprite  = std::make_unique<sf::Sprite>();
-    scoreSprite = std::make_unique<sf::Sprite>();
+    bgSprite     = std::make_unique<sf::Sprite>();
+    padSprite    = std::make_unique<sf::Sprite>();
+    ballSprite   = std::make_unique<sf::Sprite>();
+    scoreSprite  = std::make_unique<sf::Sprite>();
     scoreSprite1 = std::make_unique<sf::Sprite>();
 
     // load bg txt
@@ -79,14 +67,11 @@ void Assets::loadResources() {
 
     // set Sprites
     bgSprite->setTexture( *bgText );
-    // bgSprite->setOrigin( bgText->getSize().x/2.f, bgText->getSize().y/2.f);
-    // bgSprite->setPosition( Utils::WIDTH/2.f, Utils::HEIGHT/2.f );
 
     padSprite->setTexture( *padText );
     ballSprite->setTexture( *ballText );
 
-
-    // scoreSprite->setTexture( *scoreText );
+    // p1 score sprite
     scoreSprite->setOrigin(
         scoreSprite->getTexture()->getSize().x / 2.0f,
         scoreSprite->getTexture()->getSize().y / 2.0f
@@ -96,7 +81,7 @@ void Assets::loadResources() {
     );
     scoreSprite->setScale( 3.0f, 3.0f );
 
-    // scoreSprite1->setTexture( *scoreText1 );
+    // p2 score sprite
     scoreSprite1->setOrigin(
         scoreSprite1->getTexture()->getSize().x / 2.0f,
         scoreSprite1->getTexture()->getSize().y / 2.0f
@@ -113,65 +98,15 @@ sf::Sprite& Assets::getPad() const  { return *padSprite; }
 sf::Sprite& Assets::getBall() const { return *ballSprite; }
 
 sf::Sprite& Assets::getScore( const int id ) const {
-    // if (id == 1)
-    //     return *(this->scoreSprite);
-    // else
-    //     return *(this->scoreSprite1);
-
     
     if (id == 1) {
-            // this->scoreText->loadFromFile( Assets::SCORE[Utils::P1_SCORE] );
-            this->scoreSprite->setTexture( *(SCORE_TEXTS[Utils::P1_SCORE]) );
-
+        this->scoreSprite->setTexture( *(SCORE_TEXTS[Utils::P1_SCORE]) );
         return *scoreSprite;
-    } else if (id == 2) {
-            // this->scoreText1->loadFromFile( Assets::SCORE[Utils::P2_SCORE] );
-            this->scoreSprite1->setTexture( *(SCORE_TEXTS[Utils::P2_SCORE]) );
 
+    } else if (id == 2) {
+        this->scoreSprite1->setTexture( *(SCORE_TEXTS[Utils::P2_SCORE]) );
         return *scoreSprite1;
     }
 
     throw std::runtime_error( "Invalid Player ID Given ");
 }
-
-
-/* 
-
-    func
-        sf::Spr& getPlayerScoreSpr( id ) {
-            if (id == 1)
-                updateScoreText()
-                return scoreSprite;
-
-            else if (id == 2)
-                updateScoreText1()
-                return scoreSprite;
-        }
-
-    func
-        void updateScoreText( id, score ) {
-            if (id == 1) {
-                scoreText->loadFromFile( Assets::SCORE[score] );
-                scoreSprite->setTexture( scoreText );
-            } else if (id == 2) {
-                scoreText1->loadFromFile( Assets::SCORE[score] );
-                scoreSprite1->setTexture( scoreText1 );
-            }
-        }
-*/
-// sf::Sprite& Assets::getScore( const int id ) const {
-//     if (id == 1)
-//         return *scoreSprite;
-//     else
-//         return *scoreSprite1;
-// }
-
-// sf::Sprite& Assets::setScore( const int id, const int score ) const {
-//     if (id == 1) {
-//         this->scoreText->loadFromFile( Assets::SCORE[score] );
-//         this->scoreSprite->setTexture( this->scoreText );
-//     } else if (id == 2) {
-//         this->scoreText1->loadFromFile( Assets::SCORE[score] );
-//         this->scoreSprite1->setTexture( this->scoreText1 );
-//     }
-// }
