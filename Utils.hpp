@@ -16,7 +16,6 @@ class Utils {
         static int WIDTH;
         static int HEIGHT;
 
-
         static double EPSILON;
 
         // Norms vect

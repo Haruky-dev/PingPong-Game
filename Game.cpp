@@ -2,7 +2,7 @@
 
 #include "Assets.hpp"
 
-#include <iostream>
+#include <print>
 
 Game::Game() : F() {
 
@@ -33,6 +33,11 @@ void Game::run() {
 
     this->load();
 
+    // sf::Vertex direcLine[2] = {
+    //     sf::Vertex( ball->getPos(), sf::Color::Green ),
+    //     sf::Vertex( sf::Vector2f(P2->getPos().x, ball->getPos().y), sf::Color::Green )
+    // };
+    
     // for DBG msgs
     // sf::Time accTime = sf::Time::Zero;
 
@@ -50,14 +55,27 @@ void Game::run() {
         // if (accTime.asSeconds() >= 0.5f) {
         //     accTime = sf::Time::Zero;
         //     // std::cout<< sf::Mouse::getPosition( *win ).x << ' ' << sf::Mouse::getPosition( *win ).y << '\n';
-        //     P1->getScore();
-        //     P2->getScore();
+        //     // sf::Vector2i mousePos = sf::Mouse::getPosition( *win );
+        //     // std::println(" Mouse [x: {}, y: {}]", mousePos.x, mousePos.y);
         // } accTime += dt;
 
         F.UpdateState( dt );
         P1->UpdateState( dt );
-        P2->UpdateState( dt );
+        P2->UpdateAI( dt, *ball );
         ball->UpdateState( dt );
+
+        // direcLine[0].position = ball->getPos();
+        // direcLine[1].position = {
+        //     P2->getPos().x, P2->getPos().y
+        // };
+        // direcLine[1].position = ball->getDirec() + ball->getPos();
+
+
+        // direcLine1[0] = direcLine[0];
+        // direcLine1[0].color = sf::Color::Cyan;
+        // direcLine1[1].position = P2->getPos();
+
+
 
         win->clear();
 
@@ -68,6 +86,8 @@ void Game::run() {
         win->draw( *P2 );
         win->draw( *ball );
         win->draw( F );
+
+        // win->draw( direcLine, 2, sf::Lines );
 
         win->display();
     }

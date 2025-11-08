@@ -25,8 +25,6 @@ std::string Assets::SCORE[6] = {
     "Resources/five.png"    
 };
 
-// Assets::SCORE = std::make_unique<std::string[]>(6);
-
 void Assets::loadResources() {
     // // load font
     // if (!font.loadFromFile(FONT))
@@ -44,7 +42,7 @@ void Assets::loadResources() {
     scoreSprite1 = std::make_unique<sf::Sprite>();
 
     // load bg txt
-    if ( !(bgText->loadFromFile(Assets::BG)) )
+    if ( !(bgText->loadFromFile(BG)) )
         throw std::runtime_error("UNABLE TO LOAD [BACKGROUND] TEXTURE!");
 
     // load paddle

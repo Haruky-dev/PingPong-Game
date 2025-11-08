@@ -2,8 +2,6 @@
 
 #include <math.h>
 
-#include <iostream>
-
 #include "Player.hpp"
 #include "Ball.hpp"
 
@@ -17,7 +15,6 @@ bool Utils::changeScore = 0;
 
 double Utils::EPSILON = 1e-16;
 
-
 std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
     {Utils::Sides::TOP, {0.f, -1.f}},
     {Utils::Sides::BOTTOM, {0.f, 1.f}},
@@ -27,7 +24,7 @@ std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
 
 sf::Vector2f Utils::Normalize( const sf::Vector2f& vect ) {
     const double M = std::sqrt( (vect.x * vect.x  +   vect.y * vect.y) ); // Magnitude
-
+    
     if (M <= Utils::EPSILON) return sf::Vector2f( 0.f, 0.f );
 
     sf::Vector2f UnitVect(vect.x / M, vect.y / M);
@@ -62,12 +59,13 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
 
     // goal case
     if ( pos.left <= 0 ) {
-            changeScore = true;
+        changeScore = true;
         ball.ResetPos();
 
         if (Utils::P2_SCORE > 5)
             throw std::runtime_error("Game Over. Invalid Value Reached");
-        
+
+        ball.orient = 'l';
         Utils::P2_SCORE++;
     }
     else if ((pos.left + pos.width) >= Utils::WIDTH) {
@@ -76,7 +74,8 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
 
         if (Utils::P1_SCORE > 5)
             throw std::runtime_error("Game Over. Invalid Value Reached" );
-    
+
+        ball.orient = 'r';
         Utils::P1_SCORE++;
     }
     
