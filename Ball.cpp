@@ -19,6 +19,8 @@ Ball::Ball( const sf::Sprite& spr )
         char orients[2] = {'l', 'r'};
         this->orient = orients[ rand() % 2 ];
 
+        this->cd = 0;
+
         this->ball = spr;
         auto tempS = spr.getTexture()->getSize();
         this->ball.setOrigin( tempS.x /2.0f, tempS.y /2.0f );      
@@ -85,6 +87,7 @@ void Ball::AdjustPos( Utils::Sides side ) {
     else if (side == Utils::Sides::RIGHT)
         newBallPos.x = Utils::WIDTH - PlayBounds.width/2.0f - 35.0f; // so as that :)
     
+    // increasing speed on each Wall/Player/AI hit
     this->speed += 20;
 
     ball.setPosition( newBallPos );
@@ -93,6 +96,8 @@ void Ball::AdjustPos( Utils::Sides side ) {
 void Ball::ResetPos() {
     ball.setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
     moving = false;
+    start = true;
+    // reset speed
     this->speed = 300.0f;
 }
 
@@ -113,20 +118,24 @@ void Ball::UpdateState( const sf::Time& dt ) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         Ball::ResetPos();
 
-    if (start) {
-        this->LaunchBall();
-        start = false;
+    if (!moving && start) {
+        if (accTime.asSeconds() >= 3.0f) {
+            this->LaunchBall();
+            start = false;
+            // moving = true;
+            accTime = sf::Time::Zero;
+        } else {
+            accTime+=dt;
+            cd = (int) accTime.asSeconds();
+            if (cd == 3) cd = -1;
+        }
     }
-    
-    if (moving) {
+
+    else if (moving) {
         Rotate( dt );
         ball.move( speed * dt.asSeconds() * unitDirec );
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-        start = true;
-    }
 
-    // combine those two
     if ( Utils::checkPlayColl( *EastP, *WestP, *this, side)
       || Utils::checkWallColl(*this, side)) {
 
@@ -147,6 +156,11 @@ sf::Vector2f Ball::getPos() const {
     return ball.getPosition();
 }
 
+/* if (ball.getDirec().x <= 0) // ball is moving towards LEFT. */
 sf::Vector2f Ball::getDirec() const {
     return this->unitDirec;
+}
+
+sf::Vector2f Ball::getVelocity() const {
+    return this->velocity;
 }

@@ -25,6 +25,12 @@ std::string Assets::SCORE[6] = {
     "Resources/five.png"    
 };
 
+std::string Assets::CD[3] = {
+    "Resources/cThree.png",
+    "Resources/cTwo.png",
+    "Resources/cOne.png"
+};
+
 void Assets::loadResources() {
     // // load font
     // if (!font.loadFromFile(FONT))
@@ -40,6 +46,7 @@ void Assets::loadResources() {
     ballSprite   = std::make_unique<sf::Sprite>();
     scoreSprite  = std::make_unique<sf::Sprite>();
     scoreSprite1 = std::make_unique<sf::Sprite>();
+    countDSprite = std::make_unique<sf::Sprite>();
 
     // load bg txt
     if ( !(bgText->loadFromFile(BG)) )
@@ -60,8 +67,16 @@ void Assets::loadResources() {
             throw std::runtime_error( "Cannot load Score Textures #" + std::to_string(i+1) );
     }
 
+    for (int i = 0; i<3; ++i) {
+        Assets::CD_TEXTS[i] = std::make_unique<sf::Texture>();
+        if ( !(Assets::CD_TEXTS[i]->loadFromFile( Assets::CD[i] )) )
+            throw std::runtime_error( "Cannot load Score Textures #" + std::to_string(i+1) );
+    }
+
     Assets::scoreSprite->setTexture( *(Assets::SCORE_TEXTS[0]) );
     Assets::scoreSprite1->setTexture( *(Assets::SCORE_TEXTS[0]) );
+
+    Assets::countDSprite->setTexture( *(Assets::CD_TEXTS[2]) );
 
     // set Sprites
     bgSprite->setTexture( *bgText );
@@ -69,7 +84,7 @@ void Assets::loadResources() {
     padSprite->setTexture( *padText );
     ballSprite->setTexture( *ballText );
 
-    // p1 score sprite
+    // conf p1 score sprite
     scoreSprite->setOrigin(
         scoreSprite->getTexture()->getSize().x / 2.0f,
         scoreSprite->getTexture()->getSize().y / 2.0f
@@ -79,7 +94,7 @@ void Assets::loadResources() {
     );
     scoreSprite->setScale( 3.0f, 3.0f );
 
-    // p2 score sprite
+    // conf p2 score sprite
     scoreSprite1->setOrigin(
         scoreSprite1->getTexture()->getSize().x / 2.0f,
         scoreSprite1->getTexture()->getSize().y / 2.0f
@@ -89,6 +104,15 @@ void Assets::loadResources() {
     );
     scoreSprite1->setScale( 3.0f, 3.0f );
 
+    // conf Countdown Sprite
+    countDSprite->setOrigin(
+        countDSprite->getTexture()->getSize().x / 2.0f,
+        countDSprite->getTexture()->getSize().y / 2.0f
+    );
+    countDSprite->setPosition(
+        Utils::WIDTH /2.0f, 75.0f
+    );
+    countDSprite->setScale( 4.f, 4.f );
 }
 
 sf::Sprite& Assets::getBg()  const  { return *bgSprite; }
@@ -106,5 +130,10 @@ sf::Sprite& Assets::getScore( const int id ) const {
         return *scoreSprite1;
     }
 
-    throw std::runtime_error( "Invalid Player ID Given ");
+    throw std::runtime_error( "Invalid Player ID Given" );
+}
+
+sf::Sprite& Assets::getCD( const int n ) const {
+    this->countDSprite->setTexture( *(CD_TEXTS[n]) );
+    return *countDSprite;
 }

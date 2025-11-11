@@ -26,12 +26,14 @@ class Ball : public sf::Drawable {
         char orient; // 'l': left, 'r': right
         bool start;
         bool moving;
-            
-    protected:
+        
+        protected:
         virtual void draw( sf::RenderTarget& target, sf::RenderStates states ) const override;
         
     public:
         Ball( const sf::Sprite& spr );
+        
+        int cd;
 
         void LaunchBall();
         void setPlayers( Player& p1, Player& p2 );
@@ -41,6 +43,8 @@ class Ball : public sf::Drawable {
         void UpdateState( const sf::Time& dt );
 
         sf::FloatRect getBounds() const;
-        sf::Vector2f getPos() const;
-        sf::Vector2f getDirec() const;
+        sf::Vector2f  getPos() const;
+        sf::Vector2f  getDirec() const;
+        sf::Vector2f  getVelocity() const;
+        int getCountDown() const;
 };

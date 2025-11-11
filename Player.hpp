@@ -13,10 +13,9 @@ class Player : public sf::Drawable {
 
         static int playersCount;
         int score;
+        int AIspeed;
         
-        // sf::Time dbgTime;
-        // char dbgMsg;
-        
+        sf::Time accTime;
         
     protected:
         virtual void draw( sf::RenderTarget& target, sf::RenderStates states ) const override;

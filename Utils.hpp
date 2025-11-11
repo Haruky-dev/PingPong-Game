@@ -11,7 +11,6 @@ class Utils {
     public:
         static int P1_SCORE;
         static int P2_SCORE;
-        static bool changeScore;
         // Constants
         static int WIDTH;
         static int HEIGHT;
@@ -35,6 +34,8 @@ class Utils {
         static bool checkWallColl( Ball& ball, Utils::Sides& side );
 
         static bool checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils::Sides& side );
+
+        // static lerp function that return a pair. Target and Step to target
 
         // FPS
         class FrameRate : public sf::Drawable {

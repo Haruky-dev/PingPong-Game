@@ -38,9 +38,6 @@ void Game::run() {
     //     sf::Vertex( sf::Vector2f(P2->getPos().x, ball->getPos().y), sf::Color::Green )
     // };
     
-    // for DBG msgs
-    // sf::Time accTime = sf::Time::Zero;
-
     while ( win->isOpen() ) {
 
         dt = clk.restart();
@@ -75,11 +72,13 @@ void Game::run() {
         // direcLine1[0].color = sf::Color::Cyan;
         // direcLine1[1].position = P2->getPos();
 
-
-
         win->clear();
 
         win->draw( Assets::getInst().getBg() );
+
+        if (ball->cd != -1)
+            win->draw( Assets::getInst().getCD( ball->cd ) );
+
         win->draw( Assets::getInst().getScore(1) );
         win->draw( Assets::getInst().getScore(2) );
         win->draw( *P1 );

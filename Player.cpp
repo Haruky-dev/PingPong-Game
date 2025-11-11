@@ -4,10 +4,13 @@
 #include "Assets.hpp"
 
 #include <math.h>
+#include <print>
 
 int Player::playersCount = 0;
 
-Player::Player( const sf::Sprite& spr ) : speed(500.f), score(0) {
+Player::Player( const sf::Sprite& spr )
+    : speed(500), score(0), accTime(sf::Time::Zero), AIspeed(100)
+    {
 
     this->bar = spr;
     auto tempS = spr.getTexture()->getSize();
@@ -57,15 +60,29 @@ sf::FloatRect Player::getBounds() const {
 }
 
 void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
-    double barY = this->bar.getPosition().y;
-    double ballY = ball.getPos().y;
-    double diffY = ballY - barY;
+    /*
+        Paussible areas to feeble AI
+            - add delay before reaction
+            - drop speed
+            - react only when the ball is somewhat near
+            - 
+    */
+    // Second Approach - Prediction
+    double TakenTime  = std::abs((ball.getPos().x - this->getPos().x) / ball.getVelocity().x);
+    double estimatedY = ball.getPos().y + ball.getVelocity().y * TakenTime;
 
-    // add random error
-    // diffY -= (rand() % 120) - 60;
-    
-    if (ball.moving && (std::abs(diffY) > 20.f)) { // 50px Dead Zone, no reaction
-        double mov = this->speed * dt.asSeconds();
+    while (estimatedY < 0 || estimatedY > Utils::HEIGHT) {
+        if (estimatedY < 0)
+            estimatedY = -estimatedY;
+        else
+            estimatedY = Utils::HEIGHT * 2 - estimatedY;
+    }
+
+    double diffY = estimatedY - this->bar.getPosition().y; 
+
+        // Movement Logic
+    if (ball.moving && (std::abs(diffY) > 20.f)) { // 20px Dead Zone, no reaction
+        double mov = this->AIspeed * dt.asSeconds();
         /*
             mov sometimes might be bigger than the actual distance (diffY)
             to the target (due to non-linear 'dt' variance for example).
@@ -78,23 +95,39 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
             prevent is called 'Overshooting'.
         */
 
-        // if (ball.getDirec().x <= 0) { // ball is moving right
-            if (diffY < 0) // ball is ABOVE bar
+        if (ball.getDirec().x <= 0) { // ball is moving towards AI / East Player
+            if (diffY < 0) // future ballY is ABOVE AI bar
                 this->bar.move( 0.f, -std::min(mov, std::abs(diffY)));
-            else // ball is BELLOW bar
+            else // future ballY is BELLOW AI bar
                 this->bar.move( 0.f, std::min(mov, diffY));
         }
+    }
 
-        else {
-            double CenterDist = Utils::HEIGHT/2.f - this->getPos().y;
-            this->bar.move( 0.f, CenterDist * dt.asSeconds());
-        }
+        // Return to Center Logic
+            // (When ball is not moving || moving towards West Player)
+    if ( (!ball.moving) ||
+        ((accTime.asSeconds() <= 50.0f) && (ball.getDirec().x > 0)))
+    {
+        this->accTime += dt;
+        // try K = elapsedTime / movDuration;
+        // that makes sure it's between 0 and 1
+            // and it tracks the progress
+        double K = accTime.asSeconds() /  50.0f; // 1.0f: Animation Duration
+        // K = (K < 0.0f)? 0 : (K > 1.0f)? 1 : K;
+        K = std::clamp(K, (double) 0.0f, (double) 1.0f);
 
-        // if (this->getPos().y < 20.f)
-        //     this->bar.setPosition(0.f, 20.f);
-        // else if (this->getPos().y > Utils::HEIGHT - 20.f)
-        //     this->bar.setPosition(0.f, Utils::HEIGHT - 45.f);
+        // double fk = K * K;
+        double fk = K*K * (3 - 2*K);
 
+        double targetY = getPos().y + (Utils::HEIGHT/2.0f - getPos().y) * fk;
+        double step = targetY - getPos().y;
+
+        this->bar.move( 0.f, step);
+       }
+
+    else if (ball.getDirec().x <= 0) {
+        accTime = sf::Time::Zero;
+    }
 }
 
 sf::Vector2f Player::getPos() const {

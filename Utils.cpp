@@ -11,8 +11,6 @@ int Utils::HEIGHT = 480;
 int Utils::P1_SCORE = 0;
 int Utils::P2_SCORE = 0;
 
-bool Utils::changeScore = 0;
-
 double Utils::EPSILON = 1e-16;
 
 std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
@@ -49,6 +47,9 @@ void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
 bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     sf::FloatRect pos = ball.getBounds();
 
+
+    // Check if ball is within collable area !!!
+
     if (pos.top <= 12.f) { // 12px of the background edge
         side = Utils::Sides::TOP;
         return true;
@@ -59,7 +60,6 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
 
     // goal case
     if ( pos.left <= 0 ) {
-        changeScore = true;
         ball.ResetPos();
 
         if (Utils::P2_SCORE > 5)
@@ -69,7 +69,6 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
         Utils::P2_SCORE++;
     }
     else if ((pos.left + pos.width) >= Utils::WIDTH) {
-        changeScore = true;
         ball.ResetPos();
 
         if (Utils::P1_SCORE > 5)
@@ -79,8 +78,6 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
         Utils::P1_SCORE++;
     }
     
-    changeScore = false;
-
     return false;
 }
 
@@ -88,6 +85,12 @@ bool Utils::checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils
     if (! (&p1 && &p2))
         throw std::runtime_error("Error Occured! Insufficient number of Player.");
 
+    // Check if ball is in collable area first !!!!
+        // Compare performance, if not notable,
+            // implement a grid based collision detector
+
+
+    // !! needs better collision check later
     if (p1.getBounds().intersects(ball.getBounds())) {
         side = Utils::Sides::RIGHT;
         return true;
