@@ -6,7 +6,7 @@ Pause::Pause() : State() {}
 
 void Pause::Load() {
     this->accTime = sf::Time::Zero;
-    std::println("Pretend like I am loading..");
+    std::println("[Pause] Loading..");
     bg.setSize( sf::Vector2f( 100.f, 100.f ));
     bg.setPosition( 100.f, 100.f );
     bg.setFillColor( sf::Color::Yellow );
@@ -23,3 +23,5 @@ void Pause::Render( sf::RenderWindow& win ) const {
     win.setTitle("Game Paused!");
     win.draw( bg );
 }
+
+StateType Pause::getType() const { return StateType::Pause; }

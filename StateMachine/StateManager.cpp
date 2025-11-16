@@ -4,6 +4,9 @@
 
 #include "MainMenu.hpp"
 #include "Pause.hpp"
+// #include "Setting.hpp"
+// #include "Play.hpp"
+// #include "GameOver.hpp"
 
 #include <print>
 
@@ -12,56 +15,84 @@
 // std::stack<std::unique_ptr<State>> StateManager::_stateStack;
 
 StateManager::StateManager() : _stateStack(), accTime(sf::Time::Zero),
-    currState(nullptr), changedState(false)
+        changeFlag(false)
 {
-    _stateStack.push( std::make_unique<MainMenu>() );
+    // register all states
+    _stateRegister[StateType::MainMenu] = []() { return std::make_unique<MainMenu>(); };
+    // _stateRegister[StateType::Setting] = []() { return std::make_unique<Setting>(); };
+    _stateRegister[StateType::Pause]    = []() { return std::make_unique<Pause>(); };
+    // _stateRegister[StateType::Play]     = []() { return std::make_unique<Play>(); };
+    // _stateRegister[StateType::GameOver] = []() { return std::make_unique<GameOver>(); };
+
+    _stateStack.push_back( _stateRegister[StateType::MainMenu]() );
+    _stateStack.back()->Load();
     // _stateStack.top()->setLoaded(true);
 }
 
 StateManager::~StateManager() = default;
 
 // managaer.pushState(std::make_unique<state>)
-// StateManager.cpp
-void StateManager::pushState( std::unique_ptr<State> state ) {
-    if (!state)
-        throw std::runtime_error("Passing none valid State.");
-
-    this->_stateStack.push( std::move( state ) );
+void StateManager::pushState( StateType stateType ) {
+    this->_stateStack.push_back( _stateRegister[stateType]() );
 
     // make a function to load/uload top state on stack
-    if ( !_stateStack.top()->isLoaded() ) {
-        _stateStack.top()->Load();
-        _stateStack.top()->setLoaded(true);
+        // 'back' is the last added state (== stack::top())
+    if ( !_stateStack.back()->isLoaded() ) {
+        std::println("\nWARN: Pushed an Unloaded State!!\n");
+
+        _stateStack.back()->Load();
+        _stateStack.back()->setLoaded(true);
     }
 }
 
 void StateManager::popState() {
-    this->_stateStack.pop();
+    this->_stateStack.pop_back();
 }
 
-void StateManager::changeState() {
-    if ( !(this->_stateStack.empty()) )
-        this->_stateStack.pop();
+void StateManager::changeState( StateType stateType, bool duplicate ) {
+    /*
+        if 'duplicate': create new state
+        else: (in stake)? bring to top : create new state
+            // bring to top:
+                - hold it temporarly // ensure not creating a new one
+                - clean it's leftover (std::move leaves a nullptr)
+                - push the hold
+    */
+
+    if (!duplicate) {
+        for (int i = 0; i<_stateStack.size(); ++i)
+            if (_stateStack[i]->getType() == stateType) {
+                auto tempHold = std::move( _stateStack[i] ); // hold
+                _stateStack.erase( _stateStack.begin() + i ); // clean
+                _stateStack.push_back( std::move(tempHold) ); // push
+                return;
+            }
+    }
+
+    // duplicate || not found
+    _stateStack.push_back( _stateRegister[stateType]() );    
+    _stateStack.back()->Load();
 }
 
 void StateManager::Update( sf::Time& dt ) {
-    // this->_stateStack.top()->Upda   te( dt );
-
+    // this->_stateStack.top()->Update( dt );
     accTime+=dt;
 
-    if (!changedState && accTime.asSeconds() >= 3.0f) {
-        changedState = true;
+    if (!changeFlag && accTime.asSeconds() >= 3.0f) {
+        changeFlag = true;
         accTime = sf::Time::Zero;
 
-        this->pushState( std::make_unique<Pause>() );
+        // this->pushState( StateType::MainMenu );
+        this->changeState( StateType::Pause );
 
         std::println(" Current/Top State: [Pause] ");
     }
-    else if (changedState && accTime.asSeconds() >= 2.0f) {
-        changedState = false;
+    else if (changeFlag && accTime.asSeconds() >= 2.0f) {
+        changeFlag = false;
         accTime = sf::Time::Zero;
 
-        this->pushState( std::make_unique<MainMenu>() );
+        // this->pushState( StateType::Pause );
+        this->changeState( StateType::MainMenu );
 
         std::println( " Current/Top State: [MainMenu] ");
     }
@@ -69,5 +100,5 @@ void StateManager::Update( sf::Time& dt ) {
 
 void StateManager::Render( sf::RenderWindow& win ) const {
     if ( !(this->_stateStack.empty()) )
-        this->_stateStack.top()->Render( win );
+        this->_stateStack.back()->Render( win );
 }

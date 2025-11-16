@@ -6,7 +6,7 @@ MainMenu::MainMenu() : State() {}
 
 void MainMenu::Load() {
     this->accTime = sf::Time::Zero;
-    std::println("Pretend like I am loading..");
+    std::println("[MainMenu] Loading..");
     bg.setSize( sf::Vector2f( 300.f, 300.f ));
     bg.setPosition( 200.f, 200.f );
     bg.setFillColor( sf::Color::Red );
@@ -20,5 +20,9 @@ void MainMenu::Update( sf::Time& dt ) {
 }
 
 void MainMenu::Render( sf::RenderWindow& win ) const {
+    win.setTitle("Main Menu");
     win.draw( bg );
 }
+
+
+StateType MainMenu::getType() const { return StateType::MainMenu; }
