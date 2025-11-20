@@ -10,8 +10,10 @@ class MainMenu : public State {
     private:
         sf::RectangleShape bg;
         sf::Time accTime;
+        
+        bool gameEndFlag;
 
-    public:
+    public: 
         MainMenu();
         void Load() override;
         void Update( sf::Time& dt ) override;

@@ -12,8 +12,15 @@ class State;
 
 
 class StateManager {
+    public:
+        StateManager();
+        ~StateManager();
+
+    public:
+        void Update( sf::Time& dt );
+        void Render( sf::RenderWindow& win ) const;
+
     private:
-        // std::vector<std::unique_ptr<State>> _stateStack;
         // A storing unit that holds factory functions of states
         std::unordered_map<
             StateType, std::function<std::unique_ptr<State>()>
@@ -21,17 +28,10 @@ class StateManager {
 
         std::vector<std::unique_ptr<State>> _stateStack;
 
-        sf::Time accTime;
-
-        bool changeFlag;
-        
-    public:
-        StateManager();
-        ~StateManager();
+    private:
         void pushState( StateType stateType );
-        void changeState( StateType stateType, bool duplicate=false );
-        void popState();
-
-        void Update( sf::Time& dt );
-        void Render( sf::RenderWindow& win ) const;
+        void toggleState( StateType stateType, bool toggle );
+        void popState( StateType stateType);
+        void updateStates( sf::Time& dt ) const;
+        void renderStates( sf::RenderWindow& win  ) const;
 };

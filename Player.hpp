@@ -1,17 +1,15 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
 #include <memory>
 
-#include "Ball.hpp"
+class Ball;
 
 class Player : public sf::Drawable {
     private:
         sf::Sprite bar;
         double speed;
 
-        static int playersCount;
         int score;
         int AIspeed;
         
@@ -23,7 +21,8 @@ class Player : public sf::Drawable {
     public:
     
         int id;
-        Player( const sf::Sprite& spr );
+        Player( const sf::Sprite& spr, bool side );
+            // side; 0: for Human control, 1: for AIs
 
         void UpdateState( sf::Time& dt);
         void UpdateAI( sf::Time& dt, Ball& ball );

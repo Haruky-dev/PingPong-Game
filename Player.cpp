@@ -1,14 +1,11 @@
 #include "Player.hpp"
 
+#include "Ball.hpp"
 #include "Utils.hpp"
-#include "Assets.hpp"
 
 #include <math.h>
-#include <print>
 
-int Player::playersCount = 0;
-
-Player::Player( const sf::Sprite& spr )
+Player::Player( const sf::Sprite& spr, bool side )
     : speed(500), score(0), accTime(sf::Time::Zero), AIspeed(100)
     {
 
@@ -16,13 +13,8 @@ Player::Player( const sf::Sprite& spr )
     auto tempS = spr.getTexture()->getSize();
     this->bar.setOrigin( tempS.x /2.0f, tempS.y /2.0f );
 
-    playersCount++;
 
-    // check #Players. Assign IDs
-    if ( playersCount > 2 )
-        throw std::runtime_error("Cannot Created A Third Player!");
-
-    if ( playersCount == 1 ) {
+    if ( side ) {
         this->id = 1;
     } else {
         this->id = 2;

@@ -115,9 +115,7 @@ void Ball::Rotate( const sf::Time& dt ) {
 }
 
 void Ball::UpdateState( const sf::Time& dt ) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-        Ball::ResetPos();
-
+    
     if (!moving && start) {
         if (accTime.asSeconds() >= 3.0f) {
             this->LaunchBall();
