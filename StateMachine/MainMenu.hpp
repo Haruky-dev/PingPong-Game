@@ -8,10 +8,8 @@
 
 class MainMenu : public State {
     private:
-        sf::RectangleShape bg;
+        sf::Sprite bg;
         sf::Time accTime;
-        
-        bool gameEndFlag;
 
     public: 
         MainMenu();

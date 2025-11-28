@@ -17,7 +17,7 @@ class StateManager {
         ~StateManager();
 
     public:
-        void Update( sf::Time& dt );
+        void Update( sf::Time& dt, sf::RenderWindow& win );
         void Render( sf::RenderWindow& win ) const;
 
     private:

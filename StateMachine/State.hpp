@@ -14,8 +14,10 @@ class State {
         bool loadFlag;
         bool overlapFlag;
         bool freezeFlag;
+        int buttonsCount;
 
-        explicit State() : loadFlag(false), overlapFlag(false), freezeFlag(false) {}
+        explicit State() : loadFlag(false), overlapFlag(false),
+            freezeFlag(false), buttonsCount(0) {}
 
     public:
         virtual void Load() = 0;
@@ -24,6 +26,10 @@ class State {
 
         // getters
         virtual StateType getType() const = 0;
+        virtual int getButtonsCount() const { return buttonsCount; }
+
+        // setters (other than flags setters)
+        virtual void setButtonsCount( const int n ) { buttonsCount = n; }
 
         // flags
         void setLoaded( bool flag ) { loadFlag = flag; }

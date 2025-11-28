@@ -2,8 +2,9 @@
 
 enum class StateType {
     MainMenu,
-    Pause,
+    Setting,
     Play,
+    Pause,
     GameOver,
-    Setting
+    Quit
 };

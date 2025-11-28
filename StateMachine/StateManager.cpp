@@ -1,13 +1,15 @@
 #include "StateManager.hpp"
 
 #include "State.hpp"
+#include "InputEv.hpp"
 #include "MainMenu.hpp"
 #include "Pause.hpp"
-// #include "Setting.hpp"
+#include "Setting.hpp"
 #include "Play.hpp"
 #include "GameOver.hpp"
 
 #include "../Utils.hpp"
+#include "../Assets.hpp"
 
 #include <print>
 
@@ -16,12 +18,14 @@
 StateManager::StateManager() : _stateStack() {
     // register all states
     _stateRegister[StateType::MainMenu] = []() { return std::make_unique<MainMenu>(); };
-    // _stateRegister[StateType::Setting] = []() { return std::make_unique<Setting>(); };
+    _stateRegister[StateType::Setting]  = []() { return std::make_unique<Setting>(); };
     _stateRegister[StateType::Pause]    = []() { return std::make_unique<Pause>(); };
     _stateRegister[StateType::Play]     = []() { return std::make_unique<Play>(); };
     _stateRegister[StateType::GameOver] = []() { return std::make_unique<GameOver>(); };
     // Future state to add: Info
     // _stateRegister[StateType::Info] = []() { return std::make_unique<Info>(); };
+
+    Assets::getInst().loadResources();
 
     _stateStack.push_back( _stateRegister[StateType::MainMenu]() );
     _stateStack.back()->Load();
@@ -32,14 +36,31 @@ StateManager::~StateManager() = default;
 
 
 // -- PUBLIC FUNCs SECTION
-void StateManager::Update( sf::Time& dt ) {
-    if ( !(this->_stateStack.empty()) )
+void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
+    if ( !(this->_stateStack.empty()) ) {
         this->updateStates( dt );
+        
+        for (int i = 0; i<this->_stateStack.back()->getButtonsCount(); i++) {
+            if (InputEv::getInst().buttonClick(
+                Assets::getInst().getButtonBound( i ), win ) ) {
+                    // this->pushState( Assets::getButtonLabel( i ) );
+                    switch (Assets::getInst().getButtonLabel( i )) {
+                        case StateType::Play:
+                            this->pushState( StateType::Play );
+                            break;
+                        case StateType::Setting:
+                            std::println("Called!");
+                            this->pushState( StateType::Setting );
+                            break;
+                        case StateType::Quit:
+                            std::println("[Quit] Clicked.");
+                    }
+            }
+        }
+    }
 
     switch (this->_stateStack.back()->getType()) {
         case StateType::MainMenu:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-                this->pushState( StateType::Play );
             break;
 
         case StateType::Play:
@@ -68,6 +89,10 @@ void StateManager::Update( sf::Time& dt ) {
                 this->pushState( StateType::MainMenu );
             }
             break;
+
+        case StateType::Setting:
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+                this->popState( StateType::Setting );
     }
 }
 
@@ -93,12 +118,19 @@ void StateManager::pushState( StateType stateType ) {
     */
     switch (stateType) {
         case StateType::MainMenu:
-            // Reset stack
+                // Reset stack
             this->_stateStack.clear();
 
+            Utils::P1_SCORE = 0;
+            Utils::P2_SCORE = 0;
             break;
 
         case StateType::Pause:
+            this->_stateStack.back()->setFreeze( true );
+            overlap = true;
+            break;
+
+        case StateType::Setting:
             this->_stateStack.back()->setFreeze( true );
             overlap = true;
             break;
@@ -146,7 +178,7 @@ void StateManager::toggleState( StateType stateType, bool toggle ) {
 }
 
 void StateManager::popState( StateType stateType ) {
-    // this->_stateStack.pop_back();
+    // Situational Modifictions
     switch (stateType) {
         case StateType::Pause:
             // safe check
@@ -154,6 +186,10 @@ void StateManager::popState( StateType stateType ) {
                 // 'unPause' last state
                 this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
             break;
+
+        case StateType::Setting:
+            if (this->_stateStack.size() > 1)
+                this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
         
         case StateType::GameOver:
             if (this->_stateStack.size() > 2)
@@ -161,8 +197,10 @@ void StateManager::popState( StateType stateType ) {
 
             Utils::P1_SCORE = 0;
             Utils::P2_SCORE = 0;
+
     }
 
+        // Taking for guarantted that " input.StateType == _stateStack.back().StateType "
     this->_stateStack.pop_back();
 }
 
@@ -173,6 +211,7 @@ void StateManager::updateStates( sf::Time& dt ) const {
         return;
 
     int I = static_cast<int>(this->_stateStack.size()) - 1;
+
     for ( ; I >= 0; I-- ) {
         if ( !this->_stateStack[ I ]->isFrozen() )
             this->_stateStack[ I ]->Update( dt );
@@ -192,7 +231,7 @@ void StateManager::renderStates( sf::RenderWindow& win ) const {
     int currIndex = static_cast<int>(this->_stateStack.size()) - 1;
 
     // find index of last state that isn't overlaping
-        // (A main state, that takes up the whole window)
+        // AKA a main state, that takes up the whole window
     while ( (currIndex > 0) && _stateStack[currIndex]->isOverlapping() ) {
         currIndex--;
     }

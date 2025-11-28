@@ -10,7 +10,7 @@ Play::~Play() = default;
 
 void Play::Load() {
 
-    Assets::getInst().loadResources();
+    // Assets::getInst().loadResources();
     this->P1   = std::make_unique<Player>( Assets::getInst().getPad(), 1 );
     this->P2   = std::make_unique<Player>( Assets::getInst().getPad(), 0 );
 
