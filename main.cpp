@@ -2,6 +2,7 @@
 
 #include "StateMachine/StateManager.hpp"
 #include "Utils.hpp"
+#include "Json.hpp"
 
 #include <memory>
 
@@ -26,17 +27,32 @@ int main( void ) {
     sf::Clock clk;
     sf::Time dt = sf::Time::Zero;
 
+    bool focused = true;
+
     while ( win->isOpen() ) {
         dt = clk.restart();
 
         sf::Event ev;
-        while (win->pollEvent( ev ))
-            if ( (ev.type == sf::Event::Closed) ||
-                sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-                    // manager.Close() // Quit State
-                    win->close();
+        while (win->pollEvent( ev )) {
+            if ( ev.type == sf::Event::GainedFocus ) {
+                focused = true;
+            } else if ( ev.type == sf::Event::LostFocus ) {
+                    focused = false;
+            }
 
-        manager.Update( dt, *win );
+            if (focused) {
+                if ( (ev.type == sf::Event::Closed) ||
+                    sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+                        win->close(); // manager.Close( *win ) // Quit State
+
+                // refrech conf.json for debug
+                if ( (ev.type == sf::Event::KeyPressed) && (ev.key.code == sf::Keyboard::R) )
+                    // Json::getInst().reLoad();
+                    Json::reLoad();
+            }
+        }
+
+        if (focused) manager.Update( dt, *win );
 
         win->clear();
 

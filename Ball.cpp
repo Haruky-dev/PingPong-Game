@@ -94,7 +94,7 @@ void Ball::AdjustPos( Utils::Sides side ) {
 }
 
 void Ball::ResetPos() {
-    ball.setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
+    ball.setPosition( Utils::W_CTR );
     moving = false;
     start = true;
     // reset speed

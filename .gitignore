@@ -1,2 +1,6 @@
 *.exe
+*.o
+*.out
+*.txt
+Json/
 Resources/

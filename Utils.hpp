@@ -14,8 +14,7 @@ class Utils {
         // Constants
         static int WIDTH;
         static int HEIGHT;
-
-        static double EPSILON;
+        static sf::Vector2f W_CTR; // window Center 
 
         // Norms vect
             // Normal Vects on each side
@@ -29,6 +28,8 @@ class Utils {
         static sf::Vector2f Normalize( const sf::Vector2f& vect );
         static const double Dot( const sf::Vector2f& vect1, const sf::Vector2f& vect2 );
         static void Reflect( sf::Vector2f& vect, Utils::Sides side );
+        static double Lerp( const double A, const double B, const double t );
+        static sf::Vector2f Lerp( const sf::Vector2f& A, const sf::Vector2f& B, const double t );
 
         // Collision detect
         static bool checkWallColl( Ball& ball, Utils::Sides& side );

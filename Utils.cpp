@@ -2,16 +2,20 @@
 
 #include <math.h>
 
+#include "Json.hpp"
 #include "Player.hpp"
 #include "Ball.hpp"
 
-int Utils::WIDTH = 720;
-int Utils::HEIGHT = 480;
+int Utils::WIDTH = Json::getInt("win.W");
+int Utils::HEIGHT = Json::getInt("win.H");
+
+sf::Vector2f Utils::W_CTR = {
+    Utils::WIDTH / 2.0f,
+    Utils::HEIGHT / 2.0f
+};
 
 int Utils::P1_SCORE = 0;
 int Utils::P2_SCORE = 0;
-
-double Utils::EPSILON = 1e-16;
 
 std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
     {Utils::Sides::TOP, {0.f, -1.f}},
@@ -23,7 +27,7 @@ std::map<Utils::Sides, sf::Vector2f> Utils::Norms = {
 sf::Vector2f Utils::Normalize( const sf::Vector2f& vect ) {
     const double M = std::sqrt( (vect.x * vect.x  +   vect.y * vect.y) ); // Magnitude
     
-    if (M <= Utils::EPSILON) return sf::Vector2f( 0.f, 0.f );
+    if (M <= 0.00f) return sf::Vector2f( 0.f, 0.f );
 
     sf::Vector2f UnitVect(vect.x / M, vect.y / M);
 
@@ -44,6 +48,18 @@ void Utils::Reflect( sf::Vector2f& vect, Utils::Sides side ) {
     vect.y = vect.y - 2.f * dotProd * n.y;
 }
 
+double Utils::Lerp( const double A, const double B, const double t ) {
+    return ( A + (B - A) * t );
+}
+
+sf::Vector2f Utils::Lerp( const sf::Vector2f& A, const sf::Vector2f& B, const double t ) {
+    return sf::Vector2f(
+        A.x + (B.x - A.x) * t,
+        A.y + (B.y - A.y) * t
+    );
+}
+
+
 bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     sf::FloatRect pos = ball.getBounds();
 
@@ -62,6 +78,7 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     if ( pos.left <= 0 ) {
         ball.ResetPos();
 
+        // safe check
         if (Utils::P2_SCORE > 5)
             throw std::runtime_error("Game Over. Invalid Value Reached");
 
@@ -71,6 +88,7 @@ bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     else if ((pos.left + pos.width) >= Utils::WIDTH) {
         ball.ResetPos();
 
+        // safe check
         if (Utils::P1_SCORE > 5)
             throw std::runtime_error("Game Over. Invalid Value Reached" );
 
@@ -107,12 +125,12 @@ bool Utils::checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Utils
 Utils::FrameRate::FrameRate()
     : accTime(sf::Time::Zero), frames(0), fps(0) {
 
-        if (!font.loadFromFile("Resources/arialFont.ttf"))
+        if (!font.loadFromFile("Resources/RasterForge.ttf"))
             throw std::runtime_error("Unable to load Font");
 
         txt.setFont(font);
-        txt.setString( " FPS: [] " );
-        txt.setScale( 0.4f, 0.4f );
+        txt.setString( "" );
+        // txt.setScale( 4.f, 4.f );
         // txt.setFillColor( sf::Color::Green);
         txt.setFillColor( sf::Color(255, 165, 171) );
         Utils::FrameRate::centerText();
@@ -123,13 +141,15 @@ void Utils::FrameRate::UpdateState( sf::Time& dt ) {
     accTime += dt;
     frames++;
 
-    if (accTime.asSeconds() >= 0.5f ) { // 0.5 === delay time
+    if (accTime.asSeconds() >= 0.8f ) { // 0.5 === delay time
         fps = static_cast<int>( frames / accTime.asSeconds() );
 
         // DBG
         // std::cout << fps << ", ";
 
-        txt.setString( "FPS [" + std::to_string( fps ) + ']' );
+        // txt.setString( "FPS [" + std::to_string( fps ) + ']' );
+        txt.setString( std::to_string(fps) );
+
         Utils::FrameRate::centerText();
 
         accTime = sf::Time::Zero;
@@ -138,10 +158,11 @@ void Utils::FrameRate::UpdateState( sf::Time& dt ) {
 }
 
 void Utils::FrameRate::centerText() {
-    auto bounds = Utils::FrameRate::txt.getLocalBounds();
-    sf::Vector2f len = {bounds.width, bounds.height};
-    txt.setOrigin( len/2.f);
-    txt.setPosition(Utils::WIDTH/2.f, Utils::HEIGHT - 10.f);
+    // auto bounds = Utils::FrameRate::txt.getLocalBounds();
+    // sf::Vector2f len = {bounds.width, bounds.height};
+    // txt.setOrigin( len/2.f);
+    // txt.setPosition(Utils::WIDTH/2.f, Utils::HEIGHT - 10.f);
+    txt.setPosition( 10.f, 10.f );
 }
 
 void Utils::FrameRate::draw( sf::RenderTarget& target, sf::RenderStates states ) const {

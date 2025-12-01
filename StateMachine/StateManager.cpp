@@ -10,6 +10,7 @@
 
 #include "../Utils.hpp"
 #include "../Assets.hpp"
+#include "../Json.hpp"
 
 #include <print>
 
@@ -71,8 +72,9 @@ void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
                 this->pushState( StateType::MainMenu);
 
             // Utils::MAX_SCORE;
-            else if (Utils::P1_SCORE >= 5 || Utils::P2_SCORE >= 5)
-                this->pushState( StateType::GameOver );                
+            else if (Utils::P1_SCORE >= Json::getInt("setting.maxScore") ||
+                Utils::P2_SCORE >= Json::getInt("setting.maxScore"))
+                    this->pushState( StateType::GameOver );                
             break;
             
         case StateType::Pause:
@@ -145,8 +147,6 @@ void StateManager::pushState( StateType stateType ) {
     // make a function to load/uload top state on stack
         // 'back' is the last added state (== stack::top())
     if ( !_stateStack.back()->isLoaded() ) {
-        std::println("\nWARN: Pushed an Unloaded State!!\n");
-
         _stateStack.back()->Load();
         _stateStack.back()->setLoaded(true);
     }

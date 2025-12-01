@@ -7,11 +7,8 @@
 
 GameOver::GameOver() : State() {}
 
-bool GameOver::gameEndFlag = false;
-
 void GameOver::Load() {
     this->accTime = sf::Time::Zero;
-    GameOver::gameEndFlag = false;
 
     this->bg.setRadius( 100.f );
     this->bg.setFillColor( sf::Color::White );
@@ -29,9 +26,6 @@ void GameOver::Update( sf::Time& dt ) {
     if (accTime.asSeconds() >= 2.f) {
         std::println("[GameOver] 2s Passed by");
 
-        if (this->gameEndFlag)
-            std::println("WARN: Game has Ended!");
-
         accTime = sf::Time::Zero;
     }
 }
@@ -40,8 +34,5 @@ void GameOver::Render( sf::RenderWindow& win ) const {
     win.setTitle("Game Over!");
     win.draw( bg );
 }
-
-void GameOver::flagEnd() { gameEndFlag = true; }
-bool GameOver::isEnd() { return gameEndFlag; }
 
 StateType GameOver::getType() const { return StateType::GameOver; }

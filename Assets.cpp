@@ -150,7 +150,8 @@ void Assets::loadResources() {
         scoreSprite1->getTexture()->getSize().y / 2.0f
     );
     scoreSprite1->setPosition(
-        Utils::WIDTH - 300.0f, Utils::HEIGHT /2.0f
+        Utils::WIDTH - 300.0f,
+        Utils::HEIGHT / 2.0f
     );
     scoreSprite1->setScale( 3.0f, 3.0f );
 
@@ -162,6 +163,7 @@ void Assets::loadResources() {
     countDSprite->setPosition(
         Utils::WIDTH /2.0f, 75.0f
     );
+
     countDSprite->setScale( 4.f, 4.f );
 
     // [MainMenu] conf
@@ -171,12 +173,11 @@ void Assets::loadResources() {
     // [SETTING] conf
     SettSpr->setTexture( *SettTxt );
     SettSpr->setOrigin( SettTxt->getSize().x/2.0f, SettTxt->getSize().y/2.0f );
-    SettSpr->setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
+    SettSpr->setPosition( Utils::W_CTR );
 
     ShadSpr->setTexture( *ShadTxt );
     ShadSpr->setOrigin( ShadTxt->getSize().x/2.0f, ShadTxt->getSize().y/2.0f );
-    ShadSpr->setPosition( Utils::WIDTH/2.0f, Utils::HEIGHT/2.0f );
-    // func Utils::getWinCenter();
+    ShadSpr->setPosition( Utils::W_CTR );
 }
 
 sf::Sprite& Assets::getBg()  const  { return *bgSprite; }

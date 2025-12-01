@@ -6,6 +6,7 @@
 #include "StateType.hpp"
 #include "../Player.hpp"
 #include "../Ball.hpp"
+#include "../Utils.hpp"
 
 
 class Play : public State {
@@ -13,6 +14,7 @@ class Play : public State {
         std::unique_ptr<Player> P1;
         std::unique_ptr<Player> P2;
         std::unique_ptr<Ball> ball;
+        std::unique_ptr<Utils::FrameRate> F;
 
     public:
         Play();

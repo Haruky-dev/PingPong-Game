@@ -2,6 +2,7 @@
 
 #include "Ball.hpp"
 #include "Utils.hpp"
+#include "Json.hpp"
 
 #include <math.h>
 
@@ -63,6 +64,7 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
     double TakenTime  = std::abs((ball.getPos().x - this->getPos().x) / ball.getVelocity().x);
     double estimatedY = ball.getPos().y + ball.getVelocity().y * TakenTime;
 
+    // Reversing 'estimatedY' when it's far away from 'win' resolutions
     while (estimatedY < 0 || estimatedY > Utils::HEIGHT) {
         if (estimatedY < 0)
             estimatedY = -estimatedY;
@@ -104,14 +106,19 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
         // try K = elapsedTime / movDuration;
         // that makes sure it's between 0 and 1
             // and it tracks the progress
-        double K = accTime.asSeconds() /  50.0f; // 1.0f: Animation Duration
+
+        double K = accTime.asSeconds() /  Json::getFloat("ai.delay"); // 1.0f: Animation Duration
         // K = (K < 0.0f)? 0 : (K > 1.0f)? 1 : K;
         K = std::clamp(K, (double) 0.0f, (double) 1.0f);
-
         // double fk = K * K;
-        double fk = K*K * (3 - 2*K);
+        // double fk = K*K * (3 - 2*K);
+        double fk = (K == 0)? 0 :
+                    (K == 1)? 1 :
+                    (K < 0.5)? std::pow(2, 20 * K - 10) / 2.0f :
+                        (2 - std::pow(2, -20 * K + 10)) / 2.0f;
 
-        double targetY = getPos().y + (Utils::HEIGHT/2.0f - getPos().y) * fk;
+        // double targetY = getPos().y + (Utils::HEIGHT/2.0f - getPos().y) * fk;
+        double targetY = Utils::Lerp( this->getPos().y, Utils::HEIGHT/2.0f, fk);
         double step = targetY - getPos().y;
 
         this->bar.move( 0.f, step);
@@ -122,6 +129,4 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
     }
 }
 
-sf::Vector2f Player::getPos() const {
-    return this->bar.getPosition();
-}
+sf::Vector2f Player::getPos() const { return this->bar.getPosition(); }

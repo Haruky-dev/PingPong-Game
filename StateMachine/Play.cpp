@@ -16,16 +16,20 @@ void Play::Load() {
 
     this->ball = std::make_unique<Ball>( Assets::getInst().getBall() );
     ball->setPlayers( *P1, *P2 );
+
+    this->F    = std::make_unique<Utils::FrameRate>();
 }
 
 void Play::Update( sf::Time& dt ) {
     P1->UpdateState( dt );
     P2->UpdateAI( dt, *ball );
     ball->UpdateState( dt );
+    F->UpdateState( dt );
 }
 
 void Play::Render( sf::RenderWindow& win ) const {
     win.draw( Assets::getInst().getBg() );
+    win.draw( *F );
 
     if (ball->cd != -1)
         win.draw( Assets::getInst().getCD( ball->cd ));
