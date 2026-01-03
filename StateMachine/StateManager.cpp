@@ -7,9 +7,11 @@
 #include "Setting.hpp"
 #include "Play.hpp"
 #include "GameOver.hpp"
+#include "Loading.hpp"
 
 #include "../Utils.hpp"
 #include "../Assets.hpp"
+#include "../SoundAssets.hpp"
 #include "../Json.hpp"
 
 #include <print>
@@ -23,14 +25,19 @@ StateManager::StateManager() : _stateStack() {
     _stateRegister[StateType::Pause]    = []() { return std::make_unique<Pause>(); };
     _stateRegister[StateType::Play]     = []() { return std::make_unique<Play>(); };
     _stateRegister[StateType::GameOver] = []() { return std::make_unique<GameOver>(); };
+    _stateRegister[StateType::Loading]  = []() { return std::make_unique<Loading>(); };
     // Future state to add: Info
     // _stateRegister[StateType::Info] = []() { return std::make_unique<Info>(); };
 
-    Assets::getInst().loadResources();
+    // Assets::getInst().loadResources();
+    // SoundAssets::getInst().Load();
 
-    _stateStack.push_back( _stateRegister[StateType::MainMenu]() );
+    // _stateStack.push_back( _stateRegister[StateType::MainMenu]() );
+    _stateStack.push_back( _stateRegister[StateType::Loading]() );
+
     _stateStack.back()->Load();
-    // _stateStack.top()->setLoaded(true);
+    
+    currSound = &(SoundAssets::getInst().getMusic( 0 ));
 }
 
 StateManager::~StateManager() = default;
@@ -38,6 +45,9 @@ StateManager::~StateManager() = default;
 
 // -- PUBLIC FUNCs SECTION
 void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
+    if (currSound && (currSound->getStatus() != sf::Sound::Playing))
+        currSound->play();
+
     if ( !(this->_stateStack.empty()) ) {
         this->updateStates( dt );
         
@@ -50,7 +60,6 @@ void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
                             this->pushState( StateType::Play );
                             break;
                         case StateType::Setting:
-                            std::println("Called!");
                             this->pushState( StateType::Setting );
                             break;
                         case StateType::Quit:
@@ -61,7 +70,12 @@ void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
     }
 
     switch (this->_stateStack.back()->getType()) {
+        case StateType::Loading:
+            if ( static_cast<Loading*>( this->_stateStack.back().get() )->loadDone )
+                this->pushState( StateType::MainMenu );
+
         case StateType::MainMenu:
+            
             break;
 
         case StateType::Play:
@@ -125,6 +139,16 @@ void StateManager::pushState( StateType stateType ) {
 
             Utils::P1_SCORE = 0;
             Utils::P2_SCORE = 0;
+
+            if (currSound) currSound->pause();
+            currSound = &(SoundAssets::getInst().getMusic( 0 ));
+
+            break;
+
+        case StateType::Play:
+            if (currSound) currSound->pause();
+            currSound = &(SoundAssets::getInst().getMusic( 1 ));
+
             break;
 
         case StateType::Pause:
@@ -150,31 +174,6 @@ void StateManager::pushState( StateType stateType ) {
         _stateStack.back()->Load();
         _stateStack.back()->setLoaded(true);
     }
-}
-
-void StateManager::toggleState( StateType stateType, bool toggle ) {
-    // if state exists in stack:
-        // - if toggle: state->Load()
-        // if !toggle: state->Unload() // or Freeze not sure yet
-    // else:
-        // create new one:
-            // if toggle: state->Load()
-            // else: state->UnLoad() / Freeze
-
-    std::vector<std::unique_ptr<State>>::iterator state;
-
-    state = std::find_if(_stateStack.begin(), _stateStack.end(),
-                [stateType](const auto& st) {
-                    return st->getType() == stateType;
-                });
-        // find_if return an iterator pointing to the object if finds
-        // and that obj is a 'std::unique_ptr<State>'
-        // so I have to use as such: '((*(*state))).member' or '(*state)->member'
-
-    if (state == _stateStack.end())
-        std::println("State NOT Found");
-    else
-        std::println("State Found");
 }
 
 void StateManager::popState( StateType stateType ) {

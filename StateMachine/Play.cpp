@@ -22,7 +22,7 @@ void Play::Load() {
 
 void Play::Update( sf::Time& dt ) {
     P1->UpdateState( dt );
-    P2->UpdateAI( dt, *ball );
+    P2->UpdateAI( dt, *ball );  
     ball->UpdateState( dt );
     F->UpdateState( dt );
 }

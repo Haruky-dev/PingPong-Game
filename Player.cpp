@@ -1,4 +1,4 @@
-#include "Player.hpp"
+w#include "Player.hpp"
 
 #include "Ball.hpp"
 #include "Utils.hpp"
@@ -7,8 +7,8 @@
 #include <math.h>
 
 Player::Player( const sf::Sprite& spr, bool side )
-    : speed(500), score(0), accTime(sf::Time::Zero), AIspeed(100)
-    {
+    : score(0), accTime(sf::Time::Zero),
+    speed(Json::getFloat("p.speed")), AIspeed(Json::getFloat("ai.speed")) {
 
     this->bar = spr;
     auto tempS = spr.getTexture()->getSize();
@@ -75,7 +75,7 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
     double diffY = estimatedY - this->bar.getPosition().y; 
 
         // Movement Logic
-    if (ball.moving && (std::abs(diffY) > 20.f)) { // 20px Dead Zone, no reaction
+    if (ball.moving && (std::abs(diffY) > Json::getFloat("ai.deadZone"))) { // 20px Dead Zone, no reaction
         double mov = this->AIspeed * dt.asSeconds();
         /*
             mov sometimes might be bigger than the actual distance (diffY)
@@ -100,7 +100,7 @@ void Player::UpdateAI( sf::Time& dt, Ball& ball ) {
         // Return to Center Logic
             // (When ball is not moving || moving towards West Player)
     if ( (!ball.moving) ||
-        ((accTime.asSeconds() <= 50.0f) && (ball.getDirec().x > 0)))
+        ((accTime.asSeconds() <= Json::getFloat("ai.retTime")) && (ball.getDirec().x > 0)))
     {
         this->accTime += dt;
         // try K = elapsedTime / movDuration;

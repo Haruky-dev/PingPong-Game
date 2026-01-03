@@ -3,13 +3,19 @@
 #include "Utils.hpp"
 #include "Player.hpp"
 #include "Assets.hpp"
+#include "Json.hpp"
+#include "SoundAssets.hpp"
 
 #include <print>
 #include <math.h>
 
+using Sound = SoundAssets;
+
+
 Ball::Ball( const sf::Sprite& spr )
-    : start(false), speed(300.f), accTime(sf::Time::Zero),
-      moving(false), EastP(nullptr), WestP(nullptr) {
+    : start(false), cd(0), accTime(sf::Time::Zero),
+      moving(false), EastP(nullptr), WestP(nullptr),
+      speed(Json::getFloat("ball.speed")), accel(Json::getFloat("ball.accel")) {
 
         // !! make better random system on utils
         srand(time(NULL));
@@ -19,14 +25,11 @@ Ball::Ball( const sf::Sprite& spr )
         char orients[2] = {'l', 'r'};
         this->orient = orients[ rand() % 2 ];
 
-        this->cd = 0;
-
         this->ball = spr;
         auto tempS = spr.getTexture()->getSize();
         this->ball.setOrigin( tempS.x /2.0f, tempS.y /2.0f );      
 
         this->ResetPos();
-
 }
 
 void Ball::LaunchBall() {
@@ -88,7 +91,7 @@ void Ball::AdjustPos( Utils::Sides side ) {
         newBallPos.x = Utils::WIDTH - PlayBounds.width/2.0f - 35.0f; // so as that :)
     
     // increasing speed on each Wall/Player/AI hit
-    this->speed += 20;
+    this->speed += this->accel;
 
     ball.setPosition( newBallPos );
 }
@@ -98,12 +101,12 @@ void Ball::ResetPos() {
     moving = false;
     start = true;
     // reset speed
-    this->speed = 300.0f;
+    this->speed = Json::getFloat("ball.speed");
 }
 
 void Ball::Rotate( const sf::Time& dt ) {
     if (moving) {
-        if ( accTime.asMilliseconds() >= 50.0f ) {
+        if ( accTime.asMilliseconds() >= Json::getFloat("ball.rot") ) {
             accTime = sf::Time::Zero;
 
             // 
@@ -136,6 +139,12 @@ void Ball::UpdateState( const sf::Time& dt ) {
 
     if ( Utils::checkPlayColl( *EastP, *WestP, *this, side)
       || Utils::checkWallColl(*this, side)) {
+
+        if (side == Utils::Sides::LEFT || side == Utils::Sides::RIGHT) {
+            Sound::getInst().paddHit().play();
+        } else {
+            Sound::getInst().wallHit().play();
+        }
 
         Utils::Reflect(unitDirec, side);
         // update velocity

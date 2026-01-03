@@ -11,6 +11,9 @@
 
 #include "StateMachine/StateType.hpp"
 
+class Progressive;
+
+
 class Assets {
     private:
         Assets() = default;
@@ -63,7 +66,7 @@ class Assets {
     public:
         // Singleton Accessor
         static Assets& getInst();
-        void loadResources();
+        void Load( Progressive& prog );
 
         // getters
 

@@ -32,7 +32,6 @@ class Json {
         static bool  getBool( const str& key );
         static str   getString( const str& key );
         // json  getArray( const str& key )  const;
-            // objects
         // sf::Vector2f getV2f( const json& arr ) const;
 
             // other accessing funcs
@@ -46,6 +45,6 @@ class Json {
         // check if config data has loaded seccussfully
         static bool inValid() {
             return (Json::confData.is_null() ||
-                Json::confData.empty();)
+                Json::confData.empty());
         }
 };

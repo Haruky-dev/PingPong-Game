@@ -2,6 +2,7 @@
 
 #include "InputEv.hpp"
 #include "../Assets.hpp"
+#include "../SoundAssets.hpp"
 
 #include <print>
 
@@ -17,24 +18,11 @@ void MainMenu::Load() {
     this->setButtonsCount( 3 );
 
     std::println("[MainMenu] Loaded!");
+
+    // r = (rand() % (end - start + 1)) + start
 }
 
 void MainMenu::Update( sf::Time& dt ) {
-    // if ( InputEv::getInst().buttonClick(
-    //         Assets::getInst().getButtonBound( 0 ), win ) )
-    //             std::println("Play Button Pressed!!");
-
-    // else if ( InputEv::getInst().buttonClick(
-    //         Assets::getInst().getButtonBound( 1 ), win) )
-    //             std::println("Menu Button Pressed!!");
-
-    // else if ( InputEv::getInst().buttonClick(
-    //         Assets::getInst().getButtonBound( 2 ), win) )
-    //             std::println("Quit Button Pressed!!");
-
-    // if (StateEv::getInst().isBtnPreseed( Assets::getInst().getMMBtnBound(0) ) )
-        // std::println("Play Button Pressed!!");
-
     this->accTime+=dt;
     if (accTime.asSeconds() >= 2.0f) {
         std::println("MainMenu: 2s passed by..");

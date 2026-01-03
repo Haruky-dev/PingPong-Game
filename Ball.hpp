@@ -23,6 +23,7 @@ class Ball : public sf::Drawable {
         Player* WestP;
         
         int speed;
+        int accel;
         char orient; // 'l': left, 'r': right
         bool start;
         bool moving;

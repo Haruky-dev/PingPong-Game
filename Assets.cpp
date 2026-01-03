@@ -1,6 +1,7 @@
 #include "Assets.hpp"
 
 #include "Utils.hpp"
+#include "StateMachine/Loading.hpp"
 
 // returns reff to the singleton instance
 Assets& Assets::getInst() {
@@ -47,8 +48,11 @@ std::string Assets::MM_BTNS[6] = {
     "Resources/quit1.png"
 };
 
-void Assets::loadResources() {
-    // // load font
+void Assets::Load( Progressive& prog ) {
+
+    prog.addTotal( 60 );
+
+    // load font
     // if (!font.loadFromFile(FONT))
     //     throw std::runtime_error("UNABLE TO LOAD [FONT]!");   
 
@@ -75,11 +79,13 @@ void Assets::loadResources() {
         Assets::BTN_SPR[i]->setPosition( 40.0f, 80*(i+1) + 10);
         Assets::BTN_SPR[i]->setScale( 1.5f, 1.5f );
             // 100*(i+1): order in the Y axis
-            // + i*10   : 10px offset
+            // + i*10   : 10px offset   
 
         if ((!(Assets::BTN_TXT[i]->loadFromFile(Assets::MM_BTNS[i])))
             || (!(Assets::BTN_TXT[i+3]->loadFromFile(Assets::MM_BTNS[i+3]))))
                 throw std::runtime_error("UNABLE TO LOAD [BUTTON]s TEXTUREs!");
+
+        prog.incCount( 6 );
     }
 
         // [SETTING] State
@@ -87,41 +93,55 @@ void Assets::loadResources() {
     SettSpr = std::make_unique<sf::Sprite>();
     if ( !(Assets::SettTxt->loadFromFile( SETT )))
         throw std::runtime_error("UNABLE TO LOAD [SETTING] TEXTURE!");
+    
+    prog.incCount( 3 );
 
     ShadTxt = std::make_unique<sf::Texture>();
     ShadSpr = std::make_unique<sf::Sprite>();
     if ( !(Assets::ShadTxt->loadFromFile( Assets::SHAD )))
         throw std::runtime_error("UNABLE TO LOAD [SHADOW] TEXTURE!");
 
+    prog.incCount( 3 );
 
     // load bg txt
     if ( !(bgText->loadFromFile(BG)) )
         throw std::runtime_error("UNABLE TO LOAD [BACKGROUND] TEXTURE!");
 
+    prog.incCount( 3 );
+
     // load paddle
     if ( !(padText->loadFromFile(PAD)) )
         throw std::runtime_error("UNABLE TO LOAD [PADDLE] TEXTURE!");
+
+    prog.incCount( 3 );
 
     // load ball txt
     if ( !(ballText->loadFromFile(BALL)) )
         throw std::runtime_error("UNABLE TO LOAD [BALL] TEXTURE!");
 
+    prog.incCount( 3 );
 
     for (int i = 0; i<6; ++i) {
         Assets::SCORE_TEXTS[i] = std::make_unique<sf::Texture>();
         if ( !(Assets::SCORE_TEXTS[i]->loadFromFile( Assets::SCORE[i] )) )
             throw std::runtime_error( "Cannot load Score Textures #" + std::to_string(i+1) );
+
+        prog.incCount( 3 );
     }
 
     for (int i = 0; i<3; ++i) {
         Assets::CD_TEXTS[i] = std::make_unique<sf::Texture>();
         if ( !(Assets::CD_TEXTS[i]->loadFromFile( Assets::CD[i] )) )
             throw std::runtime_error( "Cannot load Score Textures #" + std::to_string(i+1) );
+
+        prog.incCount( 3 );
     }
 
     // load main menu txt
     if ( !(Assets::MainMenuTxt->loadFromFile( MAIN_MENU )) )
         throw std::runtime_error( "Cannot load [MAIN_MENU] TEXTURE!" );
+
+    prog.incCount( 3 );
 
     Assets::scoreSprite->setTexture( *(Assets::SCORE_TEXTS[0]) );
     Assets::scoreSprite1->setTexture( *(Assets::SCORE_TEXTS[0]) );
@@ -178,6 +198,9 @@ void Assets::loadResources() {
     ShadSpr->setTexture( *ShadTxt );
     ShadSpr->setOrigin( ShadTxt->getSize().x/2.0f, ShadTxt->getSize().y/2.0f );
     ShadSpr->setPosition( Utils::W_CTR );
+
+    // configuring textures surely takes some work lol
+    prog.incCount( 10 );
 }
 
 sf::Sprite& Assets::getBg()  const  { return *bgSprite; }

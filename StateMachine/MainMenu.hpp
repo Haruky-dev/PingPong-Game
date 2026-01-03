@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 #include "State.hpp"
 #include "StateType.hpp"
@@ -11,7 +12,7 @@ class MainMenu : public State {
         sf::Sprite bg;
         sf::Time accTime;
 
-    public: 
+    public:
         MainMenu();
         void Load() override;
         void Update( sf::Time& dt ) override;
