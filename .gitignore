@@ -2,5 +2,8 @@
 *.o
 *.out
 *.txt
-Json/
-Resources/
+
+include/json/json.hpp
+
+assets/
+build/
