@@ -7,3 +7,4 @@ include/json/json.hpp
 
 assets/
 build/
+.vscode/

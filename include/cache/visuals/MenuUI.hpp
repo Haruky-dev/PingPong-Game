@@ -4,16 +4,14 @@
 #include <SFML/Graphics/Rect.hpp>
 
 #include <string>
-#include <utility>
 #include <optional>
-#include <unordered_map>
 
 #include <engine/Progressive.hpp>
-#include <engine/StateType.hpp>
+#include <engine/State.hpp>
+#include <engine/input/Action.hpp>
 #include <entities/Utils.hpp>
 
 #define BTN_COUNT 3
-
 
 class MenuUI {
     private:
@@ -29,10 +27,7 @@ class MenuUI {
         std::optional<sf::Sprite> bg;
         std::optional<sf::Sprite> btns[BTN_COUNT];
 
-        std::unordered_map<
-            int, std::pair<StateType, sf::IntRect>
-        > btnProp;
-        /* { buttonID : {parentState (where he leads to), bounds} } */
+        sf::Rect<int> b_bounds[BTN_COUNT];
 
     public:
         static MenuUI& getInst();
@@ -41,6 +36,5 @@ class MenuUI {
 
         const sf::Sprite& get( const std::string& id, const int i=-1 ) const;
 
-        StateType btnLabel( const int id ) const;
-        sf::IntRect btnBound( const int id ) const;
+        const sf::Rect<int>& btnBound( const int id ) const;
 };

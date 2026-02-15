@@ -1,7 +1,6 @@
 #pragma once
 
 #include <engine/State.hpp>
-#include <engine/StateType.hpp>
 #include <engine/Progressive.hpp>
 
 #include <SFML/Graphics.hpp>
@@ -40,7 +39,7 @@ class Loading : public State, public Progressive {
         void Update(sf::Time &dt) override;
         void Render(sf::RenderWindow &win) const override;
 
-        StateType getType() const override;
+        State::Type getType() const override;
 
         std::atomic<bool> loadDone {false};
 

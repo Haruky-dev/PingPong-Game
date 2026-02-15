@@ -77,7 +77,6 @@ sf::IntRect Utils::getBound( const sf::Sprite& spr ) {
     );
 }
 
-
 bool Utils::checkWallColl( Ball& ball, Utils::Sides& side ) {
     sf::FloatRect pos = ball.getBounds();
 
@@ -161,6 +160,7 @@ void Utils::FrameRate::UpdateState( sf::Time& dt ) {
     accTime += dt;
     frames++;
 
+    // must be set on conf.json later on
     if (accTime.asSeconds() >= 0.8f ) { // 0.5 === delay time
         fps = static_cast<int>( frames / accTime.asSeconds() );
 

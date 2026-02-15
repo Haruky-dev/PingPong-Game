@@ -32,12 +32,16 @@ Loading::Loading() : State(), fnt(), txt(fnt), progTxt(fnt) {
 
     bg.setSize(sf::Vector2f(720.f, 480.f));
     bg.setFillColor(sf::Color::Black);
+
 }
 
 void Loading::Load() {
     try {
         loader = std::thread([this]()
         {
+            // create OpenGL/SFML context
+            sf::Context ctx;
+
             TextureCache::getInst().Load( *this );
 
             MenuUI::getInst().Load( *this );
@@ -75,7 +79,7 @@ void Loading::Render(sf::RenderWindow &win) const {
     win.draw(progTxt);
 }
 
-StateType Loading::getType() const { return StateType::Loading; }
+State::Type Loading::getType() const { return State::Type::Loading; }
 
 Loading::~Loading() {
     if (loader.joinable())

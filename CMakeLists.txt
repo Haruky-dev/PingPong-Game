@@ -1,8 +1,8 @@
-cmake_minimum_required( VERSION 3.10 )
+cmake_minimum_required( VERSION 3.26 )
 
 project(Bounce VERSION 1.0.0 LANGUAGES CXX)
 
-set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD 20 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
@@ -23,7 +23,6 @@ add_executable( ${PROJECT_NAME}
     src/cache/visuals/SettingUI.cpp
 
     src/engine/GameOver.cpp
-    src/engine/InputEv.cpp
     src/engine/Loading.cpp
     src/engine/MainMenu.cpp
     src/engine/Pause.cpp
@@ -31,6 +30,8 @@ add_executable( ${PROJECT_NAME}
     src/engine/Quit.cpp
     src/engine/Setting.cpp
     src/engine/StateManager.cpp
+
+    src/engine/input/InputManager.cpp
 
     src/json/Json.cpp
 )
@@ -53,11 +54,11 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES OUTPUT_NAME "game" )
 # inc assets/ in build
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_SOURCE_DIR}/assets
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets   
 
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         ${CMAKE_SOURCE_DIR}/data
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
         

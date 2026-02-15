@@ -14,13 +14,19 @@ void Setting::Load() {
     // this->isOverlapping( true );
 
     // bg.setScale( {0.f, 0.f} );
+    this->setRequest({
+        { sf::Keyboard::Key::Enter, Action::dropOverlap }
+    });
 }
 
 void Setting::Update( sf::Time& dt ) {
-    if (t <= 1.0f) {
+    if (t < 1.0f) {
         elapsed += dt.asSeconds();
         t = elapsed / duration;    
 
+        if ( t > 1.0f ) t = 1.0f;
+
+        // if ( bg.getPosition().y < Utils::HEIGHT )     
         shadClr.a = static_cast<std::uint8_t>( 255 * Utils::easeIn(t) );
         float y = Utils::Lerp( this->initPos, Utils::W_CTR.y, Utils::easeInOut(t) );
 
@@ -35,4 +41,4 @@ void Setting::Render( sf::RenderWindow& win ) const {
     win.draw( bg );
 }
 
-StateType Setting::getType() const { return StateType::Setting; }
+State::Type Setting::getType() const { return State::Type::Setting; }

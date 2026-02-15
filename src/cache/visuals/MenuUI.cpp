@@ -1,7 +1,7 @@
 #include <cache/visuals/MenuUI.hpp>
 
 #include <cache/TextureCache.hpp>
-#include <engine/StateType.hpp>
+
 #include <iostream>
 
 MenuUI& MenuUI::getInst() {
@@ -37,12 +37,8 @@ void MenuUI::Load( Progressive& prog ) {
             // 100*(i+1): order in the Y axis.  +i*10   : 10px offset   
         this->btns[i]->setScale({1.5f, 1.5f});
 
-        this->btnProp[i].second = Utils::getBound( this->btns[i].value() );
+        this->b_bounds[i] = Utils::getBound( this->btns[i].value() );
     }
-
-    this->btnProp[0].first = StateType::Play;
-    this->btnProp[1].first = StateType::Setting;
-    this->btnProp[2].first = StateType::Quit;
 
     prog.incCount( 6 );
 }
@@ -68,16 +64,10 @@ const sf::Sprite& MenuUI::get( const std::string& id, const int i ) const {
     throw std::runtime_error("Invalid given [ID] for [Sprite] look-up!");
 }
 
-StateType MenuUI::btnLabel( const int id ) const {
-    if ( id < 0 || id >= BTN_COUNT )
-        throw std::runtime_error("Invalid given [ID] for 'Label' look-up.");
-
-    return this->btnProp.at(id).first;
-}
-
-sf::IntRect MenuUI::btnBound( const int id ) const {
+const sf::Rect<int>& MenuUI::btnBound( const int id ) const {
     if ( id < 0 || id >= BTN_COUNT )
         throw std::runtime_error("Invalid given [ID] for 'Button' look-up.");
 
-    return this->btnProp.at( id ).second;
+    // return &(this->btnProp.at( id ).second);
+    return this->b_bounds[id];
 }

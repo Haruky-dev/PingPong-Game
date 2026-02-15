@@ -4,8 +4,6 @@
 #include <entities/Utils.hpp>
 #include <json/Json.hpp>
 
-#include <print>
-
 #include <math.h>
 
 Player::Player(const sf::Sprite &spr, bool side)

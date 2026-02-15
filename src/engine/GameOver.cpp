@@ -1,6 +1,7 @@
 #include <engine/GameOver.hpp>
 
 #include <entities/Utils.hpp>
+#include <engine/State.hpp>
 
 #include <iostream>
 
@@ -18,6 +19,11 @@ void GameOver::Load() {
     this->bg.setPosition( Utils::W_CTR );
 
     std::cout << "[GameOver] Loaded!\n";
+
+    this->setRequest({
+        { sf::Keyboard::Key::Enter, Action::dropGameOv },
+        { sf::Keyboard::Key::Escape, Action::raiseMain }
+    });
 }
 
 void GameOver::Update( sf::Time& dt ) {
@@ -35,4 +41,4 @@ void GameOver::Render( sf::RenderWindow& win ) const {
     win.draw( bg );
 }
 
-StateType GameOver::getType() const { return StateType::GameOver; }
+State::Type GameOver::getType() const { return State::Type::GameOver; }

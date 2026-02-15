@@ -3,10 +3,9 @@
 #include <SFML/Audio/Music.hpp>
 
 #include <memory>
-#include <utility>
 
 #include <engine/State.hpp>
-#include <engine/StateType.hpp>
+#include <engine/input/Action.hpp>
 
 #include <entities/Player.hpp>
 #include <entities/Ball.hpp>
@@ -20,14 +19,19 @@ class Play : public State {
         std::unique_ptr<Ball> ball;
         std::unique_ptr<Utils::FrameRate> F;
 
-        // std::optional<sf::Music> music;
+        std::unique_ptr<sf::Music> music;
 
     public:
         Play();
         ~Play();
         void Load() override;
         void Update( sf::Time& dt ) override;
+        // Action Read( const Input& in ) const override;
         void Render( sf::RenderWindow& win ) const override;
+
+        void exit() override;
+        void pause() override;
+        // void contiue;
   
-        StateType getType() const override;
+        State::Type getType() const override;
 };

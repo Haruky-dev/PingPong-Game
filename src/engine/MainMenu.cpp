@@ -1,8 +1,7 @@
 #include <engine/MainMenu.hpp>
 
-#include <engine/InputEv.hpp>
-
 #include <cache/visuals/MenuUI.hpp>
+#include <engine/input/Request.hpp>
 
 #include <cache/SoundCache.hpp>
 
@@ -14,10 +13,24 @@ void MainMenu::Load() {
     this->accTime = sf::Time::Zero;
     std::cout << "[MainMenu] Loading..\n";
 
-    this->music.emplace( "assets/musics/Yoshis_Story-Games_of_Happiness.ogg" );
-    // this->music->openFromFile( "assets/musics/Yoshis_Story-Games_of_Happiness.ogg" );
+    this->music = std::make_unique<sf::Music>();
+    if (!(this->music->openFromFile( "assets/musics/Yoshis_Story-Games_of_Happiness.ogg" )))
+        throw std::runtime_error("Failure");
+        
+    this->music->setLooping( true );
 
     this->setButtonsCount( 3 );
+
+    this->setRequest({
+        { sf::Keyboard::Key::P, Action::raisePlay },
+        { sf::Keyboard::Key::S, Action::raiseSett },
+        { sf::Keyboard::Key::Q, Action::raiseQuit }
+    });
+    this->setRequest({
+        { sf::Mouse::Button::Left, Action::raisePlay, MenuUI::getInst().btnBound( 0 ) },
+        { sf::Mouse::Button::Right, Action::raiseSett, MenuUI::getInst().btnBound( 1 ) },
+        { sf::Mouse::Button::Right, Action::raiseQuit, MenuUI::getInst().btnBound( 2 ) }
+    });
 
     std::cout << "[MainMenu] Loaded!\n";
 }
@@ -42,4 +55,13 @@ void MainMenu::Render( sf::RenderWindow& win ) const {
 }
 
 
-StateType MainMenu::getType() const { return StateType::MainMenu; }
+State::Type MainMenu::getType() const { return State::Type::MainMenu; }
+
+void MainMenu::exit() {
+    this->music.reset();
+}
+
+void MainMenu::pause() {
+    if ( this->music->getStatus() != sf::Music::Status::Stopped )
+        this->music->stop();
+}

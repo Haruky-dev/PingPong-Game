@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 
 #include <engine/State.hpp>
-#include <engine/StateType.hpp>
 
 
 class Setting : public State {
@@ -22,7 +21,7 @@ class Setting : public State {
         void Update( sf::Time& dt ) override;
         void Render( sf::RenderWindow& win ) const override;
 
-        StateType getType() const override;
+        State::Type getType() const override;
 
         ~Setting() = default;
 };

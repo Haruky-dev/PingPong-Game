@@ -25,14 +25,23 @@ void Play::Load() {
     
     ball->setPlayers( *P1, *P2 );
 
-    this->F    = std::make_unique<Utils::FrameRate>();
+    this->F = std::make_unique<Utils::FrameRate>();
 
-    // this->music.emplace( "assets/musics/Toejam_and_Earl.ogg" );
+    this->music = std::make_unique<sf::Music>();
+    if (!(this->music->openFromFile( "assets/musics/Toejam_and_Earl.ogg" )))
+        throw std::runtime_error("Failure");
+        
+    this->music->setLooping( true );
+
+    this->setRequest({
+        { sf::Keyboard::Key::Escape, Action::raiseMain },
+        { sf::Keyboard::Key::Space, Action::raisePause }
+    });
 }
 
 void Play::Update( sf::Time& dt ) {
-    // if ( this->music->getStatus() != sf::Music::Status::Playing )
-    //     this->music->play();
+    if ( this->music->getStatus() != sf::Music::Status::Playing )
+        this->music->play();
         
     P1->UpdateState( dt );
     P2->UpdateAI( dt, *ball );  
@@ -57,4 +66,12 @@ void Play::Render( sf::RenderWindow& win ) const {
     win.draw( *ball );
 }
 
-StateType Play::getType() const { return StateType::Play; }
+State::Type Play::getType() const { return State::Type::Play; }
+
+void Play::exit() {
+    this->music.reset();
+}
+
+void Play::pause() {
+    this->music->setVolume( 10 );
+}

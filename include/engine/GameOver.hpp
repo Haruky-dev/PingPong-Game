@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 
 #include <engine/State.hpp>
-#include <engine/StateType.hpp>
 
 
 class GameOver : public State {
@@ -18,7 +17,7 @@ class GameOver : public State {
         void Update( sf::Time& dt ) override;
         void Render( sf::RenderWindow& win ) const override;
 
-        StateType getType() const override;
+        State::Type getType() const override;
 
         ~GameOver() = default;
 };

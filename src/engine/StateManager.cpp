@@ -1,7 +1,7 @@
 #include <engine/StateManager.hpp>
 
-#include <engine/State.hpp>
-#include <engine/InputEv.hpp>
+#include <engine/input/Action.hpp>
+#include <engine/input/InputEv.hpp>
 #include <engine/MainMenu.hpp>
 #include <engine/Pause.hpp>
 #include <engine/Setting.hpp>
@@ -20,32 +20,19 @@
 
 #include <iostream>
 
-
 // -- CONSTRUCTOR/DEST SECTION
 StateManager::StateManager() : _stateStack() {
     // register all states
-    _stateRegister[StateType::MainMenu] = []() { return std::make_unique<MainMenu>(); };
-    _stateRegister[StateType::Setting]  = []() { return std::make_unique<Setting>(); };
-    _stateRegister[StateType::Pause]    = []() { return std::make_unique<Pause>(); };
-    _stateRegister[StateType::Play]     = []() { return std::make_unique<Play>(); };
-    _stateRegister[StateType::GameOver] = []() { return std::make_unique<GameOver>(); };
-    _stateRegister[StateType::Loading]  = []() { return std::make_unique<Loading>(); };
+    _stateRegister[State::Type::MainMenu] = []() { return std::make_unique<MainMenu>(); };
+    _stateRegister[State::Type::Setting]  = []() { return std::make_unique<Setting>(); };
+    _stateRegister[State::Type::Pause]    = []() { return std::make_unique<Pause>(); };
+    _stateRegister[State::Type::Play]     = []() { return std::make_unique<Play>(); };
+    _stateRegister[State::Type::GameOver] = []() { return std::make_unique<GameOver>(); };
+    _stateRegister[State::Type::Loading]  = []() { return std::make_unique<Loading>(); };
     // Future state to add: Info
-    // _stateRegister[StateType::Info] = []() { return std::make_unique<Info>(); };
+    // _stateRegister[State::Type::Info] = []() { return std::make_unique<Info>(); };
 
-    // Assets::getInst().loadResources();
-    // SoundAssets::getInst().Load();
-
-    // _stateStack.push_back( _stateRegister[StateType::MainMenu]() );
-    _stateStack.push_back( _stateRegister[StateType::Loading]() );
-
-    // TextureCache::getInst().Load();
-    // MenuUI::getInst().Load();
-    
-    // PlayUI::getInst().Load();
-    // SettingUI::getInst().Load();
-    // SoundCache::getInst().Load();
-
+    _stateStack.push_back( _stateRegister[State::Type::Loading]() );
     _stateStack.back()->Load();
 }
 
@@ -54,72 +41,42 @@ StateManager::~StateManager() = default;
 
 // -- PUBLIC FUNCs SECTION
 void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
-    if ( !(this->_stateStack.empty()) ) {
-        this->updateStates( dt );
-        
-        for (int i = 0; i<this->_stateStack.back()->getButtonsCount(); i++) {
-            if (InputEv::getInst().buttonClick(
-                    /* Temporarily, since only MM state has btns */
-                    MenuUI::getInst().btnBound( i ), win
-                )) {
-                    switch (MenuUI::getInst().btnLabel(i)) { /* So as this */
-                        case StateType::Play:
-                            this->pushState( StateType::Play );
-                            break;
-                        case StateType::Setting:
-                            this->pushState( StateType::Setting );
-                            break;
-                        case StateType::Quit:
-                            std::cout << "[Quit] Clicked.\n";
-                    }
-            }
-        }
+    if ( this->_stateStack.empty() )
+        return;
+
+    this->updateStates( dt );
+
+    Input in;
+
+    in.mouse = InputEv::MouseClick( this->_stateStack.back()->getButtons(), win );
+    in.keyb  = InputEv::keybClick( this->_stateStack.back()->getKeys() );
+
+    this->controlOut(
+        this->_stateStack.back()->Read( in )
+    );
+
+    switch ( this->_stateStack.back()->getType() ) {
+        case State::Type::Loading:
+            if ( static_cast<Loading*>
+                ( this->_stateStack.back().get() )->loadDone.load()
+            )
+                this->pushState( State::Type::MainMenu );
+            break;
+
+        case State::Type::Play:
+            if (
+                ( Utils::P1_SCORE >= Json::getInt("setting.maxScore") )
+                || ( Utils::P2_SCORE >= Json::getInt("setting.maxScore") )
+            )
+                this->pushState( State::Type::GameOver, true, true );
     }
+    
+        // case State::Type::Setting:
+        //     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M))
+        //         this->popState( State::Type::Setting );
+    // }
 
-    switch (this->_stateStack.back()->getType()) {
-        case StateType::Loading:
-            if ( static_cast<Loading*>( this->_stateStack.back().get() )->loadDone.load() ) {
-                std::cout << "load Done\n";
-                this->pushState( StateType::MainMenu );
-            }
-            break;
 
-        case StateType::MainMenu:
-            
-            break;
-
-        case StateType::Play:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P))
-                this->pushState( StateType::Pause );
-
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M))
-                this->pushState( StateType::MainMenu);
-
-            // Utils::MAX_SCORE;
-            else if (Utils::P1_SCORE >= Json::getInt("setting.maxScore") ||
-                Utils::P2_SCORE >= Json::getInt("setting.maxScore"))
-                    this->pushState( StateType::GameOver );                
-            break;
-            
-        case StateType::Pause:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
-                this->popState( StateType::Pause );
-            break;
-
-        case StateType::GameOver:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter)) {
-                this->popState( StateType::GameOver );
-                this->pushState( StateType::Play );
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
-                this->popState( StateType::GameOver );
-                this->pushState( StateType::MainMenu );
-            }
-            break;
-
-        case StateType::Setting:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M))
-                this->popState( StateType::Setting );
-    }
 }
 
 void StateManager::Render( sf::RenderWindow& win ) const {
@@ -129,85 +86,109 @@ void StateManager::Render( sf::RenderWindow& win ) const {
 
 
 // -- PRIVATE Func Section
-void StateManager::pushState( StateType stateType ) {
-    if (this->_stateStack.back()->getType() == stateType)
-       // throw std::runtime_error(" WARN: Replicated State Pushed! ");
+void StateManager::pushState( State::Type T, bool freezeLast, bool overlapLast ) {
+    if (!(this->_stateStack.empty())
+        && ( this->_stateStack.back()->getType() == T )) // possibly needs empty check
         return;
 
-    bool overlap = false;
-    /*
-        bool: overlape
-            mark a state with overlap flag
-        if (state->isOverlapping)
-            update prev state on stack if exist
-            // recursively do
-    */
-    switch (stateType) {
-        case StateType::MainMenu:
-                // Reset stack
-            this->_stateStack.clear();
+    if (freezeLast)
+        this->_stateStack.back()->setFreeze( freezeLast );
 
-            Utils::P1_SCORE = 0;
-            Utils::P2_SCORE = 0;
-            break;
+    this->_stateStack.push_back( this->_stateRegister[T]() );
+    this->_stateStack.back()->setOverlap( overlapLast );
 
-        case StateType::Pause:
-            this->_stateStack.back()->setFreeze( true );
-            overlap = true;
-            break;
-
-        case StateType::Setting:
-            this->_stateStack.back()->setFreeze( true );
-            overlap = true;
-            break;
-
-        case StateType::GameOver:
-            this->_stateStack.back()->setFreeze( true );
-            overlap = true;
-    }
-
-    this->_stateStack.push_back( _stateRegister[stateType]() );
-    this->_stateStack.back()->setOverlap( overlap );
-    // make a function to load/uload top state on stack
-        // 'back' is the last added state (== stack::top())
     if ( !_stateStack.back()->isLoaded() ) {
         _stateStack.back()->Load();
         _stateStack.back()->setLoaded(true);
     }
 }
 
-void StateManager::popState( StateType stateType ) {
+void StateManager::popState( State::Type T ) {
     // Situational Modifictions
-    switch (stateType) {
-        case StateType::Pause:
+    switch (T) {
+        case State::Type::Pause:
             // safe check
             if (this->_stateStack.size() > 1)
                 // 'unPause' last state
                 this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
             break;
 
-        case StateType::Setting:
+        case State::Type::Setting:
             if (this->_stateStack.size() > 1)
                 this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
         
-        case StateType::GameOver:
-            if (this->_stateStack.size() > 2)
-                this->_stateStack[ this->_stateStack.size() - 2]->setFreeze(false);
-
-            Utils::P1_SCORE = 0;
-            Utils::P2_SCORE = 0;
-
     }
 
-        // Taking for guarantted that " input.StateType == _stateStack.back().StateType "
+        // Taking for guarantted that " input.State::Type == _stateStack.back().State::Type "
     this->_stateStack.pop_back();
 }
 
-void StateManager::updateStates( sf::Time& dt ) const {
-    // update all states in _stateStack every frame
-
-    if (this->_stateStack.empty())
+void StateManager::controlOut( const Action out ) {
+    if ( out == Action::None )
         return;
+
+
+    switch ( out ) {
+        case Action::raiseMain:
+            Utils::P1_SCORE = Utils::P2_SCORE = 0;
+            this->_stateStack.clear();
+
+            this->pushState( State::Type::MainMenu );            
+            break;
+
+        case Action::raisePause:
+            this->_stateStack.back()->pause();
+            this->pushState( State::Type::Pause, true, true );
+            break;
+
+        case Action::raisePlay:
+            this->_stateStack.back()->exit();
+            this->pushState( State::Type::Play );
+            break;
+
+        case Action::raiseSett:
+            // this->_stateStack.back()->pause();
+            this->pushState( State::Type::Setting, true, true );
+            break;
+
+        case Action::raiseQuit:
+            std::cout << "Wanna quit?\n";
+            break;
+
+        case Action::dropOverlap:
+            assert(
+                ( this->_stateStack.back()->isOverlapping() )
+                && (this->_stateStack.size() > 1)
+            );
+
+            this->_stateStack.pop_back();
+            this->_stateStack.back()->setFreeze( false );
+            break;
+
+        
+
+        case Action::dropGameOv:
+            assert( this->_stateStack.back()->getType()
+                    == State::Type::GameOver );
+
+            assert( this->_stateStack.size() > 1 );
+
+            Utils::P1_SCORE = Utils::P2_SCORE = 0;
+
+            this->_stateStack.at(
+                    this->_stateStack.size() - 2 
+                )->setFreeze( false );
+
+            this->_stateStack.pop_back();
+
+            this->pushState( State::Type::Play );
+            break;
+        
+    }
+}
+
+void StateManager::updateStates( sf::Time& dt ) const {
+    // update all (top + overlapping) states in _stateStack every frame
 
     int I = static_cast<int>(this->_stateStack.size()) - 1;
 
@@ -221,12 +202,12 @@ void StateManager::updateStates( sf::Time& dt ) const {
 }
 
 void StateManager::renderStates( sf::RenderWindow& win ) const {
-    // render all states in _stateStack starting from the first
+    // render all (top + overlapping) states in _stateStack starting from the first
+
         // non-overlapping one. Preserve visibility order
     if ( this->_stateStack.empty() )
         return;
 
-    // last element index
     int currIndex = static_cast<int>(this->_stateStack.size()) - 1;
 
     // find index of last state that isn't overlaping

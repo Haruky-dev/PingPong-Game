@@ -1,45 +1,106 @@
-/* Base class that define 'shape' of all derived states */
+/* Base class that define shape of all derived states */
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <memory>
+#include <SFML/Window/Window.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 
-#include "StateType.hpp"
+#include <engine/input/InputManager.hpp>
+#include <engine/input/Request.hpp>
+#include <engine/input/Action.hpp>
+#include <engine/input/Input.hpp>
+#include <entities/Utils.hpp>
+
+#include <initializer_list>
+
 
 class StateManager;
 
 
-class State {   
+class State { 
+    public:
+        enum class Type {
+            Loading,
+            MainMenu,
+            Setting,
+            Play,
+            Pause,
+            GameOver,
+            Quit
+        };
+
     protected:
+        Request request;
+        int buttonsCount;
         bool loadFlag;
         bool overlapFlag;
         bool freezeFlag;
-        int buttonsCount;
+
 
         explicit State() : loadFlag(false), overlapFlag(false),
             freezeFlag(false), buttonsCount(0) {}
 
     public:
-        virtual void Load() = 0;
-        virtual void Update( sf::Time& dt ) = 0;
-        virtual void Render( sf::RenderWindow& win ) const = 0; 
+        virtual void   Load() = 0;
+        virtual void   Update( sf::Time& dt ) = 0;
+        virtual void   Render( sf::RenderWindow& win ) const = 0; 
 
+        virtual Action Read( const Input& input ) {
+            return InputManager::verifyInput(
+                this->request, input
+            );
+        }
+        
         // getters
-        virtual StateType getType() const = 0;
-        virtual int getButtonsCount() const { return buttonsCount; }
+        virtual State::Type getType() const = 0;
+        virtual int getButtonsCount() const { return this->buttonsCount; }
 
         // setters (other than flags setters)
-        virtual void setButtonsCount( const int n ) { buttonsCount = n; }
+        virtual void setButtonsCount( const int n ) { this->buttonsCount = n; }
+
+        virtual void setRequest( const std::initializer_list< Request::kbBinding >& that ) {
+            for ( const Request::kbBinding& K : that )
+                this->request.vitalKeys.push_back( K );
+        }
+        virtual void setRequest( const std::initializer_list< Request::msBinding >& that ) {
+            for ( const Request::msBinding& B : that )
+                this->request.vitalButtons.push_back( B );
+        }
+
+        virtual std::vector<sf::Keyboard::Key> getKeys() const {
+            std::vector<sf::Keyboard::Key> keys;
+            keys.reserve( this->request.vitalKeys.size() );
+
+            for ( const Request::kbBinding& B : this->request.vitalKeys )
+                keys.push_back( B.key );
+
+            return keys;
+        }
+
+        virtual std::vector<sf::Mouse::Button> getButtons() const {
+            std::vector<sf::Mouse::Button> buttons;
+            buttons.reserve( this->request.vitalButtons.size() );
+
+            for ( const Request::msBinding& B : this->request.vitalButtons )
+                buttons.push_back( B.btn );
+
+            return buttons;
+        }
+
+
 
         // flags
-        void setLoaded( bool flag ) { loadFlag = flag; }
-        bool isLoaded() const { return loadFlag; }
+        void setLoaded( bool flag ) { this->loadFlag = flag; }
+        bool isLoaded() const { return this->loadFlag; }
 
-        void setOverlap( bool flag ) { overlapFlag = flag; }
-        bool isOverlapping() const { return overlapFlag; }
+        void setOverlap( bool flag ) { this->overlapFlag = flag; }
+        bool isOverlapping() const { return this->overlapFlag; }
 
-        void setFreeze( bool flag ) { freezeFlag = flag; }
-        bool isFrozen() const { return freezeFlag; }
+        void setFreeze( bool flag ) { this->freezeFlag = flag; }
+        bool isFrozen() const { return this->freezeFlag; }
+
+        virtual void exit() {}
+        virtual void pause() {}
 
         virtual ~State() = default;
 };

@@ -1,32 +1,35 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <SFML/Audio/Sound.hpp>
-#include <memory>
+#include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <functional>
+#include <memory>
 #include <vector>
 #include <atomic>
+#include <span>
 
-#include "StateType.hpp"
+#include <engine/State.hpp>
 
-class State;
+enum class Action;
 
 
 class StateManager {
     private:
         // A storing unit that holds factory functions of states
         std::unordered_map<
-            StateType, std::function<std::unique_ptr<State>()>
+            State::Type, std::function<std::unique_ptr<State>()>
             > _stateRegister;
 
         std::vector<std::unique_ptr<State>> _stateStack;
 
     private:
-        void pushState( StateType stateType );
-        void popState( StateType stateType);
+        void pushState( State::Type T, bool freezeLast=false, bool overlapLast=false );
+        void popState( State::Type T);
+        void controlOut( const Action out );
         void updateStates( sf::Time& dt ) const;
         void renderStates( sf::RenderWindow& win  ) const;
+
 
     public:
         StateManager();

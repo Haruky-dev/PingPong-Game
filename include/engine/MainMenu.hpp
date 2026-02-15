@@ -3,16 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/Music.hpp>
 
-#include <utility>
+#include <memory>
 
 #include <engine/State.hpp>
-#include <engine/StateType.hpp>
-
 
 class MainMenu : public State {
     private:
         sf::Time accTime;
-        std::optional<sf::Music> music;
+        std::unique_ptr<sf::Music> music;
 
     public:
         MainMenu();
@@ -20,7 +18,12 @@ class MainMenu : public State {
         void Update( sf::Time& dt ) override;
         void Render( sf::RenderWindow& win ) const override;
 
-        StateType getType() const override;
+        // Action msAction( const Input& in ) const override;
+        State::Type getType() const override;
+
+
+        void exit() override;
+        void pause() override;
 
         ~MainMenu() = default;
 };
