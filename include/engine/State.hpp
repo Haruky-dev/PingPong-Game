@@ -9,7 +9,6 @@
 #include <engine/input/Request.hpp>
 #include <engine/input/Action.hpp>
 #include <engine/input/Input.hpp>
-#include <entities/Utils.hpp>
 
 #include <initializer_list>
 

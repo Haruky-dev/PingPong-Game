@@ -1,7 +1,7 @@
 #include <cache/visuals/SettingUI.hpp>
 
 #include <cache/TextureCache.hpp>
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 
 #include <iostream>
 
@@ -27,14 +27,14 @@ void SettingUI::Load( Progressive& prog ) {
     );
 
     this->bg->setPosition({
-        Utils::W_CTR.x,
-        Utils::HEIGHT + (bg->getTexture().getSize().y / 2.f)
+        Tool::W_CTR.x,
+        Tool::HEIGHT + (bg->getTexture().getSize().y / 2.f)
     });
 
     this->shad->setOrigin(
         sf::Vector2f(this->shad->getTexture().getSize()) / 2.f
     );
-    this->shad->setPosition( Utils::W_CTR );
+    this->shad->setPosition( Tool::W_CTR );
     
     prog.incCount( 5 );
 }

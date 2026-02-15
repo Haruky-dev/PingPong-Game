@@ -14,7 +14,11 @@ add_executable( ${PROJECT_NAME}
 
     src/entities/Ball.cpp
     src/entities/Player.cpp
-    src/entities/Utils.cpp
+
+    src/tools/Tool.cpp
+    src/tools/Math.cpp
+    src/tools/FrameRate.cpp
+    src/tools/Json.cpp
 
     src/cache/SoundCache.cpp
     src/cache/TextureCache.cpp
@@ -30,10 +34,7 @@ add_executable( ${PROJECT_NAME}
     src/engine/Quit.cpp
     src/engine/Setting.cpp
     src/engine/StateManager.cpp
-
     src/engine/input/InputManager.cpp
-
-    src/json/Json.cpp
 )
 
 # link SFML libs

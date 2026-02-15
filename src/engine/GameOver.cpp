@@ -1,6 +1,6 @@
 #include <engine/GameOver.hpp>
 
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 #include <engine/State.hpp>
 
 #include <iostream>
@@ -16,7 +16,7 @@ void GameOver::Load() {
     this->bg.setOutlineColor( sf::Color::Black );
     this->bg.setOutlineThickness( 10.f );
     this->bg.setOrigin( {this->bg.getRadius(), this->bg.getRadius()} );
-    this->bg.setPosition( Utils::W_CTR );
+    this->bg.setPosition( Tool::W_CTR );
 
     std::cout << "[GameOver] Loaded!\n";
 

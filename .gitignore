@@ -3,7 +3,7 @@
 *.out
 *.txt
 
-include/json/json.hpp
+include/tools/json.hpp
 
 assets/
 build/

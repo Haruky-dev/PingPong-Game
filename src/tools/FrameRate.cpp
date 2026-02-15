@@ -1,6 +1,6 @@
 #include <tools/FrameRate.hpp>
 
-#include <json/Json.hpp>
+#include <tools/Json.hpp>
 
 FrameRate::FrameRate()
     : accTime(sf::Time::Zero), frames(0), fps(0), font(),

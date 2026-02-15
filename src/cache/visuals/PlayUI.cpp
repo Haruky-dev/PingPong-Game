@@ -1,7 +1,7 @@
 #include <cache/visuals/PlayUI.hpp>
 
 #include <cache/TextureCache.hpp>
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 
 #include <iostream>
 
@@ -37,13 +37,13 @@ void PlayUI::Load( Progressive& prog ) {
     this->score_1->setOrigin(
         sf::Vector2f(this->score_1->getTexture().getSize()) / 2.f
     );
-    this->score_1->setPosition( {300.0f, Utils::HEIGHT /2.0f} );
+    this->score_1->setPosition( {300.0f, Tool::HEIGHT /2.0f} );
     this->score_1->setScale( {3.0f, 3.0f} );   
 
     this->score_2->setOrigin(
         sf::Vector2f(this->score_2->getTexture().getSize()) / 2.f
     );
-    this->score_2->setPosition( {Utils::WIDTH - 300.0f, Utils::HEIGHT / 2.0f} );
+    this->score_2->setPosition( {Tool::WIDTH - 300.0f, Tool::HEIGHT / 2.0f} );
     this->score_2->setScale( {3.0f, 3.0f} );   
 
     // countdown sprite conf
@@ -51,7 +51,7 @@ void PlayUI::Load( Progressive& prog ) {
         sf::Vector2f( this->countD->getTexture().getSize()) / 2.f
     );
     this->countD->setPosition({
-        Utils::WIDTH /2.0f, 75.0f
+        Tool::WIDTH /2.0f, 75.0f
     });
 
     this->countD->setScale( {4.f, 4.f} );

@@ -3,13 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 
 class Player;
 
 class Ball : public sf::Drawable {
 
-    friend class Utils;
+    friend class Tool;
     friend class Player;
     
     private:
@@ -18,7 +18,7 @@ class Ball : public sf::Drawable {
         sf::Vector2f unitDirec;
         sf::Vector2f velocity;
         sf::Sound padHit, wallHit;
-        Utils::Sides side;
+        Tool::Sides side;
 
         sf::Time accTime;
 
@@ -41,7 +41,7 @@ class Ball : public sf::Drawable {
 
         void LaunchBall();
         void setPlayers( Player& p1, Player& p2 );
-        void AdjustPos( Utils::Sides side );
+        void AdjustPos( Tool::Sides side );
         void ResetPos();
         void Rotate( const sf::Time& dt );
         void UpdateState( const sf::Time& dt );

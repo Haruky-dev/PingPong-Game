@@ -37,7 +37,7 @@ void MenuUI::Load( Progressive& prog ) {
             // 100*(i+1): order in the Y axis.  +i*10   : 10px offset   
         this->btns[i]->setScale({1.5f, 1.5f});
 
-        this->b_bounds[i] = Utils::getBound( this->btns[i].value() );
+        this->b_bounds[i] = Tool::getBound( this->btns[i].value() );
     }
 
     prog.incCount( 6 );

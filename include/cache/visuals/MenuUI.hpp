@@ -9,7 +9,7 @@
 #include <engine/Progressive.hpp>
 #include <engine/State.hpp>
 #include <engine/input/Action.hpp>
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 
 #define BTN_COUNT 3
 

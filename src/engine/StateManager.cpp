@@ -9,10 +9,10 @@
 #include <engine/GameOver.hpp>
 #include <engine/Loading.hpp>
 
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 #include <cache/TextureCache.hpp>
 #include <cache/SoundCache.hpp>
-#include <json/Json.hpp>
+#include <tools/Json.hpp>
 
 #include <cache/visuals/MenuUI.hpp>
 #include <cache/visuals/SettingUI.hpp>
@@ -65,18 +65,11 @@ void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
 
         case State::Type::Play:
             if (
-                ( Utils::P1_SCORE >= Json::getInt("setting.maxScore") )
-                || ( Utils::P2_SCORE >= Json::getInt("setting.maxScore") )
+                ( Tool::P1_SCORE >= Json::getInt("setting.maxScore") )
+                || ( Tool::P2_SCORE >= Json::getInt("setting.maxScore") )
             )
                 this->pushState( State::Type::GameOver, true, true );
     }
-    
-        // case State::Type::Setting:
-        //     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M))
-        //         this->popState( State::Type::Setting );
-    // }
-
-
 }
 
 void StateManager::Render( sf::RenderWindow& win ) const {
@@ -88,7 +81,7 @@ void StateManager::Render( sf::RenderWindow& win ) const {
 // -- PRIVATE Func Section
 void StateManager::pushState( State::Type T, bool freezeLast, bool overlapLast ) {
     if (!(this->_stateStack.empty())
-        && ( this->_stateStack.back()->getType() == T )) // possibly needs empty check
+        && ( this->_stateStack.back()->getType() == T ))
         return;
 
     if (freezeLast)
@@ -130,7 +123,7 @@ void StateManager::controlOut( const Action out ) {
 
     switch ( out ) {
         case Action::raiseMain:
-            Utils::P1_SCORE = Utils::P2_SCORE = 0;
+            Tool::P1_SCORE = Tool::P2_SCORE = 0;
             this->_stateStack.clear();
 
             this->pushState( State::Type::MainMenu );            
@@ -173,7 +166,7 @@ void StateManager::controlOut( const Action out ) {
 
             assert( this->_stateStack.size() > 1 );
 
-            Utils::P1_SCORE = Utils::P2_SCORE = 0;
+            Tool::P1_SCORE = Tool::P2_SCORE = 0;
 
             this->_stateStack.at(
                     this->_stateStack.size() - 2 

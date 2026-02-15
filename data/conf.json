@@ -6,7 +6,8 @@
     },
 
     "setting": {
-        "maxScore": 5
+        "maxScore": 5,
+        "fps_t": 4.0
     },
 
     "ball": {

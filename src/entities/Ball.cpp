@@ -1,9 +1,10 @@
 #include <entities/Ball.hpp>
 
-#include <entities/Utils.hpp>
 #include <entities/Player.hpp>
 
-#include <json/Json.hpp>
+#include <tools/Tool.hpp>
+#include <tools/Math.hpp>
+#include <tools/Json.hpp>
 
 #include <cache/SoundCache.hpp>
 
@@ -36,7 +37,7 @@ void Ball::LaunchBall() {
     if ( this->orient == 'l' )
         direc.x = 0.0f;
     else if (this->orient == 'r')
-        direc.x = Utils::WIDTH;
+        direc.x = Tool::WIDTH;
         
     // randPoint = (rand() % (end - start + 1)) + start
     
@@ -52,7 +53,7 @@ void Ball::LaunchBall() {
     // direction = targetPos - currPos;
     direc -= ball.getPosition();
 
-    unitDirec  = Utils::Normalize(direc);
+    unitDirec  = Math::Normalize(direc);
     // velocity = speed * unitDirec;
     velocity.x = unitDirec.x * speed;
     velocity.y = unitDirec.y * speed;
@@ -69,7 +70,7 @@ void Ball::draw( sf::RenderTarget& target, sf::RenderStates states ) const  {
     target.draw(ball, states);
 }
 
-void Ball::AdjustPos( Utils::Sides side ) {
+void Ball::AdjustPos( Tool::Sides side ) {
     if (! (EastP && WestP))
         throw std::runtime_error("Error Occured! Unsufficient Number of Players.");
 
@@ -78,16 +79,16 @@ void Ball::AdjustPos( Utils::Sides side ) {
     sf::Vector2f newBallPos = ball.getPosition();
 
     // hits top/bottom walls
-    if (side == Utils::Sides::TOP)
+    if (side == Tool::Sides::TOP)
         newBallPos.y = BallBounds.size.x/2.0f + 12.0f;
-    else if (side == Utils::Sides::BOTTOM)
-        newBallPos.y = Utils::HEIGHT - BallBounds.size.y/2.0f - 12.0f;
+    else if (side == Tool::Sides::BOTTOM)
+        newBallPos.y = Tool::HEIGHT - BallBounds.size.y/2.0f - 12.0f;
     
     // Resolve sticking for player case
-    else if (side == Utils::Sides::LEFT)
+    else if (side == Tool::Sides::LEFT)
         newBallPos.x = PlayBounds.size.x/2.0f + 35.0f;
-    else if (side == Utils::Sides::RIGHT)
-        newBallPos.x = Utils::WIDTH - PlayBounds.size.x/2.0f - 35.0f; // so as that :)
+    else if (side == Tool::Sides::RIGHT)
+        newBallPos.x = Tool::WIDTH - PlayBounds.size.x/2.0f - 35.0f; // so as that :)
     
     // increasing speed on each Wall/Player/AI hit
     this->speed += this->accel;
@@ -96,7 +97,7 @@ void Ball::AdjustPos( Utils::Sides side ) {
 }
 
 void Ball::ResetPos() {
-    ball.setPosition( Utils::W_CTR );
+    ball.setPosition( Tool::W_CTR );
     moving = false;
     start = true;
     // reset speed
@@ -137,16 +138,16 @@ void Ball::UpdateState( const sf::Time& dt ) {
         ball.move( speed * dt.asSeconds() * unitDirec );
     }
 
-    if ( Utils::checkPlayColl( *EastP, *WestP, *this, side)
-      || Utils::checkWallColl(*this, side)) {
+    if ( Tool::checkPlayColl( *EastP, *WestP, *this, side)
+      || Tool::checkWallColl(*this, side)) {
 
-        if (side == Utils::Sides::LEFT || side == Utils::Sides::RIGHT) {
+        if (side == Tool::Sides::LEFT || side == Tool::Sides::RIGHT) {
             this->padHit.play();
         } else {
             this->wallHit.play();
         }
 
-        Utils::Reflect(unitDirec, side);
+        Math::Reflect(unitDirec, side);
         // update velocity
         this->velocity.x = this->unitDirec.x * this->speed;
         this->velocity.y = this->unitDirec.y * this->speed;

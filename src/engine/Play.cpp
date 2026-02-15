@@ -25,7 +25,7 @@ void Play::Load() {
     
     ball->setPlayers( *P1, *P2 );
 
-    this->F = std::make_unique<Utils::FrameRate>();
+    this->F = std::make_unique<FrameRate>();
 
     this->music = std::make_unique<sf::Music>();
     if (!(this->music->openFromFile( "assets/musics/Toejam_and_Earl.ogg" )))
@@ -58,8 +58,8 @@ void Play::Render( sf::RenderWindow& win ) const {
             PlayUI::getInst().get("cd", ball->cd)
         );
 
-    win.draw( PlayUI::getInst().get("sc1", Utils::P1_SCORE) );
-    win.draw( PlayUI::getInst().get("sc2", Utils::P2_SCORE) );
+    win.draw( PlayUI::getInst().get("sc1", Tool::P1_SCORE) );
+    win.draw( PlayUI::getInst().get("sc2", Tool::P2_SCORE) );
     
     win.draw( *P1 );
     win.draw( *P2 );

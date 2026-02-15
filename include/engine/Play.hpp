@@ -9,7 +9,7 @@
 
 #include <entities/Player.hpp>
 #include <entities/Ball.hpp>
-#include <entities/Utils.hpp>
+#include <tools/FrameRate.hpp>
 
 
 class Play : public State {
@@ -17,7 +17,7 @@ class Play : public State {
         std::unique_ptr<Player> P1;
         std::unique_ptr<Player> P2;
         std::unique_ptr<Ball> ball;
-        std::unique_ptr<Utils::FrameRate> F;
+        std::unique_ptr<FrameRate> F;
 
         std::unique_ptr<sf::Music> music;
 

@@ -3,12 +3,13 @@
 #include <cstdint>
 
 #include <cache/visuals/SettingUI.hpp>
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
+#include <tools/Math.hpp>
 
 Setting::Setting() : State(), bg(SettingUI::getInst().get("bg")),
     shad(SettingUI::getInst().get("shad")), shadClr(shad.getColor()),
     t(0.0f), elapsed(0.0f), duration(0.5f),
-    initPos(Utils::HEIGHT + bg.getTexture().getSize().y / 2.f) {}
+    initPos(Tool::HEIGHT + bg.getTexture().getSize().y / 2.f) {}
 
 void Setting::Load() {
     // this->isOverlapping( true );
@@ -26,9 +27,8 @@ void Setting::Update( sf::Time& dt ) {
 
         if ( t > 1.0f ) t = 1.0f;
 
-        // if ( bg.getPosition().y < Utils::HEIGHT )     
-        shadClr.a = static_cast<std::uint8_t>( 255 * Utils::easeIn(t) );
-        float y = Utils::Lerp( this->initPos, Utils::W_CTR.y, Utils::easeInOut(t) );
+        shadClr.a = static_cast<std::uint8_t>( 255 * Math::easeIn(t) );
+        float y = Math::Lerp( this->initPos, Tool::W_CTR.y, Math::easeInOut(t) );
 
         shad.setColor( shadClr );
         bg.setPosition({ bg.getPosition().x, y });

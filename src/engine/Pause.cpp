@@ -1,6 +1,6 @@
 #include <engine/Pause.hpp>
 
-#include <entities/Utils.hpp>
+#include <tools/Tool.hpp>
 #include <engine/input/Action.hpp>
 
 #include <iostream>
@@ -12,7 +12,7 @@ void Pause::Load() {
     
     bg.setSize( sf::Vector2f( 300.f, 300.f ));
     bg.setOrigin( bg.getSize() / 2.f );
-    bg.setPosition( Utils::W_CTR );
+    bg.setPosition( Tool::W_CTR );
     bg.setFillColor( sf::Color::Yellow );
 
     this->setRequest({

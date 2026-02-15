@@ -1,8 +1,8 @@
 #include <SFML/Graphics.hpp>
 
 #include <engine/StateManager.hpp>
-#include <entities/Utils.hpp>
-#include <json/Json.hpp>
+#include <tools/Tool.hpp>
+#include <tools/Json.hpp>
 
 #include <memory>
 
@@ -20,7 +20,7 @@ int main( void ) {
     // center win
     win->setPosition(
         ( sf::Vector2i(sf::VideoMode::getDesktopMode().size) -
-          sf::Vector2i({Utils::WIDTH, Utils::HEIGHT}) )
+          sf::Vector2i({Tool::WIDTH, Tool::HEIGHT}) )
         / 2);
     
     StateManager manager{};

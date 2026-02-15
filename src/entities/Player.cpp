@@ -1,8 +1,9 @@
 #include <entities/Player.hpp>
 
 #include <entities/Ball.hpp>
-#include <entities/Utils.hpp>
-#include <json/Json.hpp>
+#include <tools/Tool.hpp>
+#include <tools/Math.hpp>
+#include <tools/Json.hpp>
 
 #include <math.h>
 
@@ -16,10 +17,10 @@ Player::Player(const sf::Sprite &spr, bool side)
 
     if (side) {
         this->id = 1;
-        bar.setPosition({Utils::WIDTH - 20.f, Utils::HEIGHT / 2.f});
+        bar.setPosition({Tool::WIDTH - 20.f, Tool::HEIGHT / 2.f});
     } else {
         this->id = 2;
-        bar.setPosition({20.f, Utils::HEIGHT / 2.f});
+        bar.setPosition({20.f, Tool::HEIGHT / 2.f});
         this->bar.setRotation( sf::Angle( sf::degrees(180.f) ));
     }
 }
@@ -35,7 +36,7 @@ void Player::UpdateState(sf::Time &dt) {
                 bar.move({0, -speed * dt.asSeconds()});
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-            if (Y_pos + halfHeight < Utils::HEIGHT - 14.0f)
+            if (Y_pos + halfHeight < Tool::HEIGHT - 14.0f)
                 bar.move({0, speed * dt.asSeconds()});
         }
     }
@@ -65,11 +66,11 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
     double estimatedY = ball.getPos().y + ball.getVelocity().y * TakenTime;
 
     // Reversing 'estimatedY' when it's far away from 'win' resolutions
-    while (estimatedY < 0 || estimatedY > Utils::HEIGHT) {
+    while (estimatedY < 0 || estimatedY > Tool::HEIGHT) {
         if (estimatedY < 0)
             estimatedY = -estimatedY;
         else
-            estimatedY = Utils::HEIGHT * 2 - estimatedY;
+            estimatedY = Tool::HEIGHT * 2 - estimatedY;
     }
 
     double diffY = estimatedY - this->bar.getPosition().y;
@@ -120,8 +121,8 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
                                : (K < 0.5)  ? std::pow(2, 20 * K - 10) / 2.0f
                                             : (2 - std::pow(2, -20 * K + 10)) / 2.0f;
 
-        // double targetY = getPos().y + (Utils::HEIGHT/2.0f - getPos().y) * fk;
-        float targetY = Utils::Lerp(this->getPos().y, Utils::HEIGHT / 2.0f, fk);
+        // double targetY = getPos().y + (Tool::HEIGHT/2.0f - getPos().y) * fk;
+        float targetY = Math::Lerp(this->getPos().y, Tool::HEIGHT / 2.0f, fk);
         float step = targetY - getPos().y;
 
         this->bar.move({0.f, step});

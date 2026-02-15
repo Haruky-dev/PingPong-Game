@@ -14,7 +14,6 @@
 #include <initializer_list>
 #include <vector>
 
-#include <entities/Utils.hpp>
 #include <engine/input/Action.hpp>
 
 class State;
