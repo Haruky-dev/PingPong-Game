@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include <iostream>
 
 int main( void ) {
 
@@ -46,7 +45,7 @@ int main( void ) {
                     if ( ev->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Q ) 
                         win->close();
 
-                // refrech conf.json for debug
+                // DBG: refresh conf.json
                     else if ( ev->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R )
                         Json::reLoad();
                 }

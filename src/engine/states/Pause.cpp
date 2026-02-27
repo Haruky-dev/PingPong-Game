@@ -1,4 +1,4 @@
-#include <engine/Pause.hpp>
+#include <engine/states/Pause.hpp>
 
 #include <tools/Tool.hpp>
 #include <engine/input/Action.hpp>
@@ -8,6 +8,8 @@
 Pause::Pause() : State() {}
 
 void Pause::Load() {
+    std::cout << "[Pause] Loading..\n";
+    
     this->accTime = sf::Time::Zero;
     
     bg.setSize( sf::Vector2f( 300.f, 300.f ));
@@ -19,12 +21,14 @@ void Pause::Load() {
         { sf::Keyboard::Key::Enter, Action::dropOverlap },
         { sf::Keyboard::Key::Escape, Action::raiseMain }
     });
+    
+    std::cout << "[Pause] Loaded!\n";
 }
 
 void Pause::Update( sf::Time& dt ) {
     accTime+=dt;
     if (accTime.asSeconds() > 2.0f) {
-        std::cout << "Game Paused: 2s Passed by..\n";
+        std::cout << "[Pause]\n";
         accTime = sf::Time::Zero;
     }
 }

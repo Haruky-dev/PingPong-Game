@@ -1,10 +1,11 @@
 cmake_minimum_required( VERSION 3.26 )
 
-project(Bounce VERSION 1.0.0 LANGUAGES CXX)
+project(bounce VERSION 1.0.0 LANGUAGES CXX)
 
 set( CMAKE_CXX_STANDARD 20 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 find_package( SFML 3 REQUIRED COMPONENTS Graphics Window System Audio REQUIRED )
 
@@ -17,40 +18,41 @@ add_executable( ${PROJECT_NAME}
 
     src/tools/Tool.cpp
     src/tools/Math.cpp
-    src/tools/FrameRate.cpp
     src/tools/Json.cpp
+    src/tools/FrameRate.cpp
 
     src/cache/SoundCache.cpp
     src/cache/TextureCache.cpp
-    src/cache/visuals/PlayUI.cpp
     src/cache/visuals/MenuUI.cpp
+    src/cache/visuals/PlayUI.cpp
     src/cache/visuals/SettingUI.cpp
-
-    src/engine/GameOver.cpp
-    src/engine/Loading.cpp
-    src/engine/MainMenu.cpp
-    src/engine/Pause.cpp
-    src/engine/Play.cpp
-    src/engine/Quit.cpp
-    src/engine/Setting.cpp
+    
     src/engine/StateManager.cpp
+    src/engine/states/Play.cpp
+    src/engine/states/Quit.cpp
+    src/engine/states/Pause.cpp
+    src/engine/states/Loading.cpp
+    src/engine/states/Setting.cpp    
+    src/engine/states/MainMenu.cpp
+    src/engine/states/GameOver.cpp
     src/engine/input/InputManager.cpp
 )
 
 # link SFML libs
 target_link_libraries( ${PROJECT_NAME} PRIVATE
+    sfml-audio
     sfml-window
     sfml-system
     sfml-graphics
-    sfml-audio
 )
 
-# include all .hpp files in /include
 target_include_directories( ${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/include
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES OUTPUT_NAME "game" )
+set_source_files_properties( ${CMAKE_SOURCE_DIR}/src/tools/Json.cpp
+    PROPERTIES OBJECT_DEPENDS ${CMAKE_SOURCE_DIR}/data/conf.json )
 
 # inc assets/ in build
 add_custom_command(

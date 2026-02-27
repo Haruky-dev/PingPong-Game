@@ -1,14 +1,13 @@
 #pragma once
 
-#include <engine/State.hpp>
-#include <engine/Progressive.hpp>
-
 #include <SFML/Graphics.hpp>
+
+#include <engine/State.hpp>
+#include <engine/features/Progressive.hpp>
 
 #include <thread>
 #include <atomic>
 
-#include <iostream>
 
 class Loading : public State, public Progressive {
     private:
@@ -20,6 +19,8 @@ class Loading : public State, public Progressive {
 
         std::atomic<int> loadCost {1}; // total n of work units (avoid /0)
         std::atomic<int> currUnit {0}; // track curr n of work units
+        
+        Action feature() const override;
 
     public:
         // Add into total work units

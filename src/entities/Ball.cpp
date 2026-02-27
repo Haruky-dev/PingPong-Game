@@ -1,3 +1,4 @@
+#include <cassert>
 #include <entities/Ball.hpp>
 
 #include <entities/Player.hpp>
@@ -20,8 +21,6 @@ Ball::Ball( const sf::Sprite& spr )
         // !! make better random system on utils
         srand(time(NULL));
 
-        // this->orient = 'l'; // randonize later !!
-        // suggested sollution to a random oreint
         char orients[2] = {'l', 'r'};
         this->orient = orients[ rand() % 2 ];
 
@@ -54,7 +53,6 @@ void Ball::LaunchBall() {
     direc -= ball.getPosition();
 
     unitDirec  = Math::Normalize(direc);
-    // velocity = speed * unitDirec;
     velocity.x = unitDirec.x * speed;
     velocity.y = unitDirec.y * speed;
 
@@ -71,28 +69,28 @@ void Ball::draw( sf::RenderTarget& target, sf::RenderStates states ) const  {
 }
 
 void Ball::AdjustPos( Tool::Sides side ) {
-    if (! (EastP && WestP))
-        throw std::runtime_error("Error Occured! Unsufficient Number of Players.");
+    assert( EastP && WestP );
 
     sf::FloatRect BallBounds = getBounds();
     sf::FloatRect PlayBounds = EastP->getBounds();
     sf::Vector2f newBallPos = ball.getPosition();
+    
+    switch ( side ) {
+        case Tool::Sides::TOP:
+            newBallPos.y = BallBounds.size.x/2.0f + 12.0f;
+            break;
+        case Tool::Sides::BOTTOM:
+            newBallPos.y = Tool::HEIGHT - (BallBounds.size.x/2.0f + 12.0f);
+            break;
+        case Tool::Sides::LEFT:
+            newBallPos.x = PlayBounds.size.x/2.f + 35.f;
+            break;
+        case Tool::Sides::RIGHT:
+            newBallPos.x = Tool::WIDTH - (PlayBounds.size.x/2.f + 35.f);
+            break;
+    }
 
-    // hits top/bottom walls
-    if (side == Tool::Sides::TOP)
-        newBallPos.y = BallBounds.size.x/2.0f + 12.0f;
-    else if (side == Tool::Sides::BOTTOM)
-        newBallPos.y = Tool::HEIGHT - BallBounds.size.y/2.0f - 12.0f;
-    
-    // Resolve sticking for player case
-    else if (side == Tool::Sides::LEFT)
-        newBallPos.x = PlayBounds.size.x/2.0f + 35.0f;
-    else if (side == Tool::Sides::RIGHT)
-        newBallPos.x = Tool::WIDTH - PlayBounds.size.x/2.0f - 35.0f; // so as that :)
-    
-    // increasing speed on each Wall/Player/AI hit
     this->speed += this->accel;
-
     ball.setPosition( newBallPos );
 }
 

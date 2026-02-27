@@ -1,4 +1,4 @@
-#include <engine/GameOver.hpp>
+#include <engine/states/GameOver.hpp>
 
 #include <tools/Tool.hpp>
 #include <engine/State.hpp>
@@ -9,6 +9,8 @@
 GameOver::GameOver() : State() {}
 
 void GameOver::Load() {
+    std::cout << "[GameOver] Loading..\n";
+
     this->accTime = sf::Time::Zero;
 
     this->bg.setRadius( 100.f );
@@ -21,7 +23,7 @@ void GameOver::Load() {
     std::cout << "[GameOver] Loaded!\n";
 
     this->setRequest({
-        { sf::Keyboard::Key::Enter, Action::dropGameOv },
+        { sf::Keyboard::Key::Enter, Action::dropOverlap },
         { sf::Keyboard::Key::Escape, Action::raiseMain }
     });
 }
@@ -30,7 +32,7 @@ void GameOver::Update( sf::Time& dt ) {
     accTime+=dt;
 
     if (accTime.asSeconds() >= 2.f) {
-        std::cout << "[GameOver] 2s Passed by\n";
+        std::cout << "[GameOver]\n";
 
         accTime = sf::Time::Zero;
     }

@@ -20,18 +20,19 @@ class Play : public State {
         std::unique_ptr<FrameRate> F;
 
         std::unique_ptr<sf::Music> music;
+        
+        Action feature() const override;
 
     public:
         Play();
         ~Play();
         void Load() override;
         void Update( sf::Time& dt ) override;
-        // Action Read( const Input& in ) const override;
         void Render( sf::RenderWindow& win ) const override;
 
         void exit() override;
         void pause() override;
         // void contiue;
-  
+          
         State::Type getType() const override;
 };

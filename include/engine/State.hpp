@@ -17,6 +17,11 @@ class StateManager;
 
 
 class State { 
+    private:
+        virtual Action feature() const {
+            return Action::None;
+        }
+    
     public:
         enum class Type {
             Loading,
@@ -45,17 +50,23 @@ class State {
         virtual void   Render( sf::RenderWindow& win ) const = 0; 
 
         virtual Action Read( const Input& input ) {
-            return InputManager::verifyInput(
-                this->request, input
-            );
+            Action act = this->feature();
+ 
+            if ( act == Action::None )
+                act = InputManager::verifyInput( this->request, input );
+            
+            return act;
         }
         
         // getters
         virtual State::Type getType() const = 0;
+        virtual bool animated() const { return false; }
+        virtual bool exitDone() const { return true; }
         virtual int getButtonsCount() const { return this->buttonsCount; }
 
         // setters (other than flags setters)
         virtual void setButtonsCount( const int n ) { this->buttonsCount = n; }
+        virtual void requestExit() {}
 
         virtual void setRequest( const std::initializer_list< Request::kbBinding >& that ) {
             for ( const Request::kbBinding& K : that )
@@ -87,7 +98,6 @@ class State {
         }
 
 
-
         // flags
         void setLoaded( bool flag ) { this->loadFlag = flag; }
         bool isLoaded() const { return this->loadFlag; }
@@ -98,6 +108,7 @@ class State {
         void setFreeze( bool flag ) { this->freezeFlag = flag; }
         bool isFrozen() const { return this->freezeFlag; }
 
+        // actions
         virtual void exit() {}
         virtual void pause() {}
 

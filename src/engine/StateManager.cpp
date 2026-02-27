@@ -1,22 +1,24 @@
 #include <engine/StateManager.hpp>
 
+#include <engine/State.hpp>
+#include <engine/states/Play.hpp>
+#include <engine/states/Pause.hpp>
+#include <engine/states/Loading.hpp>
+#include <engine/states/Setting.hpp>
+#include <engine/states/MainMenu.hpp>
+#include <engine/states/GameOver.hpp>
 #include <engine/input/Action.hpp>
 #include <engine/input/InputEv.hpp>
-#include <engine/MainMenu.hpp>
-#include <engine/Pause.hpp>
-#include <engine/Setting.hpp>
-#include <engine/Play.hpp>
-#include <engine/GameOver.hpp>
-#include <engine/Loading.hpp>
+#include <engine/features/Animated.hpp>
 
 #include <tools/Tool.hpp>
-#include <cache/TextureCache.hpp>
-#include <cache/SoundCache.hpp>
 #include <tools/Json.hpp>
+#include <cache/SoundCache.hpp>
+#include <cache/TextureCache.hpp>
 
 #include <cache/visuals/MenuUI.hpp>
-#include <cache/visuals/SettingUI.hpp>
 #include <cache/visuals/PlayUI.hpp>
+#include <cache/visuals/SettingUI.hpp>
 
 #include <iostream>
 
@@ -53,23 +55,7 @@ void StateManager::Update( sf::Time& dt, sf::RenderWindow& win ) {
 
     this->controlOut(
         this->_stateStack.back()->Read( in )
-    );
-
-    switch ( this->_stateStack.back()->getType() ) {
-        case State::Type::Loading:
-            if ( static_cast<Loading*>
-                ( this->_stateStack.back().get() )->loadDone.load()
-            )
-                this->pushState( State::Type::MainMenu );
-            break;
-
-        case State::Type::Play:
-            if (
-                ( Tool::P1_SCORE >= Json::getInt("setting.maxScore") )
-                || ( Tool::P2_SCORE >= Json::getInt("setting.maxScore") )
-            )
-                this->pushState( State::Type::GameOver, true, true );
-    }
+    );   
 }
 
 void StateManager::Render( sf::RenderWindow& win ) const {
@@ -80,12 +66,13 @@ void StateManager::Render( sf::RenderWindow& win ) const {
 
 // -- PRIVATE Func Section
 void StateManager::pushState( State::Type T, bool freezeLast, bool overlapLast ) {
-    if (!(this->_stateStack.empty())
-        && ( this->_stateStack.back()->getType() == T ))
-        return;
-
-    if (freezeLast)
-        this->_stateStack.back()->setFreeze( freezeLast );
+    if ( !(this->_stateStack.empty()) ) {
+        if ( this->_stateStack.back()->getType() == T )
+            return;
+        
+        if ( freezeLast )
+            this->_stateStack.back()->setFreeze( freezeLast );
+    }
 
     this->_stateStack.push_back( this->_stateRegister[T]() );
     this->_stateStack.back()->setOverlap( overlapLast );
@@ -96,30 +83,9 @@ void StateManager::pushState( State::Type T, bool freezeLast, bool overlapLast )
     }
 }
 
-void StateManager::popState( State::Type T ) {
-    // Situational Modifictions
-    switch (T) {
-        case State::Type::Pause:
-            // safe check
-            if (this->_stateStack.size() > 1)
-                // 'unPause' last state
-                this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
-            break;
-
-        case State::Type::Setting:
-            if (this->_stateStack.size() > 1)
-                this->_stateStack[ this->_stateStack.size() - 2 ]->setFreeze( false );
-        
-    }
-
-        // Taking for guarantted that " input.State::Type == _stateStack.back().State::Type "
-    this->_stateStack.pop_back();
-}
-
 void StateManager::controlOut( const Action out ) {
     if ( out == Action::None )
         return;
-
 
     switch ( out ) {
         case Action::raiseMain:
@@ -147,48 +113,47 @@ void StateManager::controlOut( const Action out ) {
         case Action::raiseQuit:
             std::cout << "Wanna quit?\n";
             break;
+            
+        case Action::raiseGameOv:
+            this->pushState( State::Type::GameOver, true, true );
+            break;
 
         case Action::dropOverlap:
             assert(
                 ( this->_stateStack.back()->isOverlapping() )
                 && (this->_stateStack.size() > 1)
             );
+            if ( this->_stateStack.back()->getType() == State::Type::GameOver )
+                Tool::P1_SCORE = Tool::P2_SCORE = 0;
 
-            this->_stateStack.pop_back();
-            this->_stateStack.back()->setFreeze( false );
+            if ( this->_stateStack.back()->animated() ) {
+                this->_stateStack.back()->requestExit();
+            } else {
+                this->_stateStack.pop_back();
+                this->_stateStack.back()->setFreeze( false );
+            }
+            
             break;
-
-        
-
-        case Action::dropGameOv:
-            assert( this->_stateStack.back()->getType()
-                    == State::Type::GameOver );
-
-            assert( this->_stateStack.size() > 1 );
-
-            Tool::P1_SCORE = Tool::P2_SCORE = 0;
-
-            this->_stateStack.at(
-                    this->_stateStack.size() - 2 
-                )->setFreeze( false );
-
-            this->_stateStack.pop_back();
-
-            this->pushState( State::Type::Play );
-            break;
-        
     }
 }
 
-void StateManager::updateStates( sf::Time& dt ) const {
+void StateManager::updateStates( sf::Time& dt ) {
     // update all (top + overlapping) states in _stateStack every frame
+    
+    if ( this->_stateStack.back()->animated() &&
+        this->_stateStack.back()->exitDone()
+    ) {
+        this->_stateStack.pop_back();
+        if ( this->_stateStack.size() > 0 )
+            this->_stateStack.back()->setFreeze( false );
+    }
 
     int I = static_cast<int>(this->_stateStack.size()) - 1;
 
     for ( ; I >= 0; I-- ) {
         if ( !this->_stateStack[ I ]->isFrozen() )
             this->_stateStack[ I ]->Update( dt );
-
+        
         if ( !this->_stateStack[ I ]->isOverlapping() )
             break;
     }
@@ -197,7 +162,6 @@ void StateManager::updateStates( sf::Time& dt ) const {
 void StateManager::renderStates( sf::RenderWindow& win ) const {
     // render all (top + overlapping) states in _stateStack starting from the first
 
-        // non-overlapping one. Preserve visibility order
     if ( this->_stateStack.empty() )
         return;
 

@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include <engine/Progressive.hpp>
+#include <engine/features/Progressive.hpp>
 
 
 class TextureCache {

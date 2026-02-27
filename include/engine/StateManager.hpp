@@ -6,8 +6,6 @@
 #include <functional>
 #include <memory>
 #include <vector>
-#include <atomic>
-#include <span>
 
 #include <engine/State.hpp>
 
@@ -25,9 +23,8 @@ class StateManager {
 
     private:
         void pushState( State::Type T, bool freezeLast=false, bool overlapLast=false );
-        void popState( State::Type T);
+        void updateStates( sf::Time& dt );
         void controlOut( const Action out );
-        void updateStates( sf::Time& dt ) const;
         void renderStates( sf::RenderWindow& win  ) const;
 
 

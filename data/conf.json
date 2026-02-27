@@ -6,8 +6,10 @@
     },
 
     "setting": {
-        "maxScore": 5,
-        "fps_t": 4.0
+        "maxScore": 2,
+        "fps_t": 1.0,
+        
+        "mode": "M"
     },
 
     "ball": {
@@ -18,9 +20,9 @@
 
     "ai": {
         "speed": 200.0,
-        "delay": 5.0,
-        "deadZone": 20.0,
-        "retTime": 50.0
+        "retDur": 1000.0,
+        "deadZone": 10.0,
+        "retTime": 100.0
     },
 
     "p": {

@@ -1,6 +1,7 @@
 #include <cache/visuals/PlayUI.hpp>
 
 #include <cache/TextureCache.hpp>
+#include <cassert>
 #include <tools/Tool.hpp>
 
 #include <iostream>
@@ -61,22 +62,19 @@ void PlayUI::Load( Progressive& prog ) {
 
 const sf::Sprite& PlayUI::get( const std::string& id, int i ) {
     if ( id == "bg" ) {
-        if ( !this->bg.has_value())
-            throw std::runtime_error("[PlayUI] Background sprite not loaded yet!");
+        assert( this->bg.has_value() );
 
         return this->bg.value();
     }
     
     else if ( id == "pad" ) {
-        if ( !this->pad.has_value())
-            throw std::runtime_error("[PlayUI] Paddle sprite not loaded yet!");
+        assert( this->pad.has_value() );
 
         return this->pad.value();
     }
 
     else if ( id == "ball" ) {
-        if ( !this->ball.has_value())
-            throw std::runtime_error("[PlayUI] Ball sprite not loaded yet!");
+        assert( this->ball.has_value() );
 
         return this->ball.value();
     }
@@ -87,8 +85,7 @@ const sf::Sprite& PlayUI::get( const std::string& id, int i ) {
                 TextureCache::getInst().get( "play/cd/" + std::to_string(3-i) )
             );
 
-        if ( !this->countD.has_value())
-            throw std::runtime_error("[PlayUI] CountDown sprite not loaded yet!");
+        assert( this->countD.has_value() );
 
         return this->countD.value();
     }
@@ -99,8 +96,7 @@ const sf::Sprite& PlayUI::get( const std::string& id, int i ) {
                 TextureCache::getInst().get( "play/sc/" + std::to_string(i) )
             );
 
-        if ( !this->score_1.has_value())
-            throw std::runtime_error("[PlayUI] Player 1 Score sprite not loaded yet!");
+        assert( this->score_1.has_value() );
 
         return this->score_1.value();
     }
@@ -110,8 +106,7 @@ const sf::Sprite& PlayUI::get( const std::string& id, int i ) {
             this->score_2->setTexture(
                 TextureCache::getInst().get( "play/sc/" + std::to_string(i) )
             );
-        if ( !this->score_2.has_value())
-            throw std::runtime_error("[PlayUI] Player 2 Score sprite not loaded yet!");
+        assert( this->score_2.has_value() );
 
         return this->score_2.value();
     }

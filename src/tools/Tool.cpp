@@ -1,3 +1,5 @@
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <tools/Tool.hpp>
 
 #include <tools/Json.hpp>
@@ -7,6 +9,8 @@
 
 int Tool::WIDTH = Json::getInt("win.W");
 int Tool::HEIGHT = Json::getInt("win.H");
+
+float Tool::f_WIDTH = Tool::WIDTH / 5.f;
 
 sf::Vector2f Tool::W_CTR = {
     Tool::WIDTH / 2.0f,
@@ -23,11 +27,9 @@ std::unordered_map<Tool::Sides, sf::Vector2f> Tool::Norms = {
     { Tool::Sides::RIGHT,  {1.f, 0.f}  },
 };
 
-// rect<int>
-sf::IntRect Tool::getBound( const sf::Sprite& spr ) {
+sf::Rect<int> Tool::getBound( const sf::Sprite& spr ) {
     return sf::IntRect(
-        static_cast<sf::Vector2i>(spr.getPosition()),
-        // static_cast<sf::Vector2i>(spr.getGlobalBounds().position),
+        static_cast<sf::Vector2i>(spr.getGlobalBounds().position),
         static_cast<sf::Vector2i>(spr.getGlobalBounds().size)
     );
 }
@@ -50,8 +52,7 @@ bool Tool::checkWallColl( Ball& ball, Tool::Sides& side ) {
     if ( pos.position.x <= 0 ) {
         ball.ResetPos();
 
-        // safe check
-        if (Tool::P2_SCORE > 5)
+        if (Tool::P2_SCORE > Json::getInt("setting.maxScore"))
             throw std::runtime_error("Game Over. Invalid Value Reached");
 
         ball.orient = 'l';
@@ -60,8 +61,7 @@ bool Tool::checkWallColl( Ball& ball, Tool::Sides& side ) {
     else if ((pos.position.x + pos.size.x) >= Tool::WIDTH) {
         ball.ResetPos();
 
-        // safe check
-        if (Tool::P1_SCORE > 5)
+        if (Tool::P1_SCORE > Json::getInt("setting.maxScore"))
             throw std::runtime_error("Game Over. Invalid Value Reached" );
 
         ball.orient = 'r';
@@ -72,26 +72,21 @@ bool Tool::checkWallColl( Ball& ball, Tool::Sides& side ) {
 }
 
 bool Tool::checkPlayColl( const Player& p1, const Player& p2, Ball& ball, Tool::Sides& side ) {
-    if (! (&p1 && &p2))
-        throw std::runtime_error("Error Occured! Insufficient number of Player.");
+    sf::Rect<float> ballPos = ball.getBounds();
 
-    // Check if ball is in collable area first !!!!
-        // Compare performance, if not notable,
-            // implement a grid based collision detector
-
-
-    // !! needs better collision check later
-    if (p1.getBounds().findIntersection( ball.getBounds() ).has_value()) {
-    // if (p1.getBounds().intersects(ball.getBounds())) {
-        side = Tool::Sides::RIGHT;
-        return true;
+    if ( ballPos.position.x > (Tool::WIDTH - Tool::f_WIDTH) ) {
+        if (p1.getBounds().findIntersection( ball.getBounds() ).has_value()) {
+            side = Tool::Sides::RIGHT;
+            return true;
+        }    
     }
-
-    else if (p2.getBounds().findIntersection( ball.getBounds() ).has_value()) {
-    // else if (p2.getBounds().intersects(ball.getBounds())) {
-        side = Tool::Sides::LEFT;
-        return true;
+    
+    else if ( ballPos.position.x < Tool::f_WIDTH ) {
+        if (p2.getBounds().findIntersection( ball.getBounds() ).has_value()) {
+            side = Tool::Sides::LEFT;
+            return true;
+        }
     }
-
+    
     return false;
 }

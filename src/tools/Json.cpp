@@ -1,7 +1,7 @@
+#include <cassert>
 #include <tools/Json.hpp>
 
 #include <fstream>
-#include <print>
 #include <stdexcept>
 
 #include <iostream>
@@ -10,13 +10,12 @@ json Json::confData = json::object(); // Init as empty obj
 
 void Json::Load( const str& filePath ) {
     std::ifstream file(filePath);
-    if (!file.is_open() || file.fail())
-        throw std::runtime_error("Couldn't reload [JSON FILE].");
+    assert( !file.fail() );
+    assert( file.is_open() );
 
     try {
         file >> Json::confData;
-        if (Json::confData.is_null())
-            throw std::runtime_error("Given file is [EMPTY]/[inVALID]. " + filePath);
+        assert( !(Json::confData.is_null() ));
 
     } catch ( const json::exception& e ) {
         throw std::runtime_error(e.what());
@@ -24,7 +23,7 @@ void Json::Load( const str& filePath ) {
 }
 
 void Json::reLoad() {
-    std::cout << "RELOAD FILE\n";
+    std::cout << "[Json] R\n";
     Json::Load();
 };
 

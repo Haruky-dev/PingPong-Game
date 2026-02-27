@@ -1,10 +1,11 @@
-#include <engine/Play.hpp>
+#include <engine/states/Play.hpp>
 
 #include <SFML/Graphics.hpp>
 
 #include <cache/visuals/PlayUI.hpp>
-
 #include <cache/SoundCache.hpp>
+#include <tools/Json.hpp>
+#include <tools/Tool.hpp>
 
 
 Play::Play() : State() {}
@@ -66,7 +67,6 @@ void Play::Render( sf::RenderWindow& win ) const {
     win.draw( *ball );
 }
 
-State::Type Play::getType() const { return State::Type::Play; }
 
 void Play::exit() {
     this->music.reset();
@@ -75,3 +75,15 @@ void Play::exit() {
 void Play::pause() {
     this->music->setVolume( 10 );
 }
+
+Action Play::feature() const {
+    if (
+        ( Tool::P1_SCORE >= Json::getInt("setting.maxScore") ) 
+        || ( Tool::P2_SCORE >= Json::getInt("setting.maxScore") )
+    )
+        return Action::raiseGameOv;
+    
+    return Action::None;
+}
+
+State::Type Play::getType() const { return State::Type::Play; }

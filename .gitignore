@@ -1,10 +1,6 @@
-*.exe
-*.o
-*.out
 *.txt
 
 include/tools/json.hpp
 
 assets/
 build/
-.vscode/

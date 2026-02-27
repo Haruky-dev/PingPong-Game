@@ -1,4 +1,4 @@
-#include <engine/MainMenu.hpp>
+#include <engine/states/MainMenu.hpp>
 
 #include <cache/visuals/MenuUI.hpp>
 #include <engine/input/Request.hpp>
@@ -18,18 +18,19 @@ void MainMenu::Load() {
         throw std::runtime_error("Failure");
         
     this->music->setLooping( true );
+    this->music->setVolume(20);
 
     this->setButtonsCount( 3 );
 
     this->setRequest({
         { sf::Keyboard::Key::P, Action::raisePlay },
-        { sf::Keyboard::Key::S, Action::raiseSett },
+        { sf::Keyboard::Key::M, Action::raiseSett },
         { sf::Keyboard::Key::Q, Action::raiseQuit }
     });
     this->setRequest({
         { sf::Mouse::Button::Left, Action::raisePlay, MenuUI::getInst().btnBound( 0 ) },
-        { sf::Mouse::Button::Right, Action::raiseSett, MenuUI::getInst().btnBound( 1 ) },
-        { sf::Mouse::Button::Right, Action::raiseQuit, MenuUI::getInst().btnBound( 2 ) }
+        { sf::Mouse::Button::Left, Action::raiseSett, MenuUI::getInst().btnBound( 1 ) },
+        { sf::Mouse::Button::Left, Action::raiseQuit, MenuUI::getInst().btnBound( 2 ) }
     });
 
     std::cout << "[MainMenu] Loaded!\n";
@@ -41,7 +42,7 @@ void MainMenu::Update( sf::Time& dt ) {
 
     this->accTime+=dt;
     if (accTime.asSeconds() >= 2.0f) {
-        std::cout << "MainMenu: 2s passed by..\n";
+        std::cout << "[MainMenu]\n";
         accTime = sf::Time::Zero;
     }
 }

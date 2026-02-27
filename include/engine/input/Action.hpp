@@ -1,15 +1,14 @@
 #pragma once
 
 enum class Action {
-        None,
+    None,
 
-        raiseMain,
-        raisePause,
-        raisePlay,
-        raiseSett,
-        raiseQuit,
+    raiseMain,
+    raisePause,
+    raisePlay,
+    raiseSett,
+    raiseQuit,
+    raiseGameOv,
 
-        dropOverlap,
-        dropGameOv, // basically goto Play state
-        dropSett
+    dropOverlap
 };

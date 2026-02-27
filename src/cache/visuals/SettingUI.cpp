@@ -1,6 +1,7 @@
 #include <cache/visuals/SettingUI.hpp>
 
 #include <cache/TextureCache.hpp>
+#include <cassert>
 #include <tools/Tool.hpp>
 
 #include <iostream>
@@ -41,15 +42,13 @@ void SettingUI::Load( Progressive& prog ) {
 
 const sf::Sprite& SettingUI::get( const std::string& id, const int i ) const {
     if ( id == "bg" ) {
-        if ( !this->bg.has_value())
-            throw std::runtime_error("[SettingUI] Background sprite not loaded yet!");
+        assert( this->bg.has_value() );
 
         return this->bg.value();
     }
 
     else if ( id == "shad" ) {
-        if ( !this->shad.has_value())
-            throw std::runtime_error("[SettingUI] Shadow sprite not loaded yet!");
+        assert( this->shad.has_value() );
 
         return this->shad.value();
     }

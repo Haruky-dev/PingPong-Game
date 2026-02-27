@@ -6,7 +6,7 @@
 #include <string>
 #include <optional>
 
-#include <engine/Progressive.hpp>
+#include <engine/features/Progressive.hpp>
 #include <engine/State.hpp>
 #include <engine/input/Action.hpp>
 #include <tools/Tool.hpp>

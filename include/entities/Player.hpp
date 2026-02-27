@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 
 class Ball;
 
@@ -9,11 +8,10 @@ class Player : public sf::Drawable {
     private:
         sf::Sprite bar;
         float speed;
+        float accTime;
 
         int score;
         int AIspeed;
-        
-        sf::Time accTime;
         
     protected:
         virtual void draw( sf::RenderTarget& target, sf::RenderStates states ) const override;

@@ -1,8 +1,10 @@
 #include <cache/visuals/MenuUI.hpp>
 
 #include <cache/TextureCache.hpp>
+#include <cassert>
+#include <tools/Tool.hpp>
 
-#include <iostream>
+#include <SFML/Graphics.hpp>
 
 MenuUI& MenuUI::getInst() {
     static MenuUI inst = MenuUI();
@@ -33,9 +35,9 @@ void MenuUI::Load( Progressive& prog ) {
         sf::Sprite btnSpr( txtCache.get(id) );
         this->btns[i] = std::make_optional<sf::Sprite>( btnSpr );
 
-        this->btns[i]->setPosition({40.0f, 80.f*(i+1) + 10});
-            // 100*(i+1): order in the Y axis.  +i*10   : 10px offset   
-        this->btns[i]->setScale({1.5f, 1.5f});
+        this->btns[i]->setOrigin( sf::Vector2f(this->btns[i]->getTexture().getSize()) / 2.f );
+        this->btns[i]->setPosition({ Tool::W_CTR.x, Tool::W_CTR.y - 90.f * (1-i) });
+        this->btns[i]->setScale( {2.f, 2.f} );
 
         this->b_bounds[i] = Tool::getBound( this->btns[i].value() );
     }
@@ -44,19 +46,15 @@ void MenuUI::Load( Progressive& prog ) {
 }
 
 const sf::Sprite& MenuUI::get( const std::string& id, const int i ) const {
-    if ( id == "bg" ) {
-        if ( !this->bg.has_value())
-            throw std::runtime_error("[MenuUI] Background sprite not loaded yet!");
+    if ( !(id.compare("bg")) ) {
+        assert( this->bg.has_value() );
 
         return this->bg.value();
     }
 
-    else if ( id == "btn" ) {
-        if ( i < 0 || i >= BTN_COUNT )
-            throw std::runtime_error("[MenuUI] Invalid button index requested!");
-
-        if ( !this->btns[i].has_value())
-            throw std::runtime_error("[MenuUI] Button sprite not loaded yet!");
+    else if ( !(id.compare("btn")) ) {
+        assert( i >= 0 && i < BTN_COUNT );
+        assert( this->btns[i].has_value() );
 
         return this->btns[i].value();
     }
@@ -65,9 +63,7 @@ const sf::Sprite& MenuUI::get( const std::string& id, const int i ) const {
 }
 
 const sf::Rect<int>& MenuUI::btnBound( const int id ) const {
-    if ( id < 0 || id >= BTN_COUNT )
-        throw std::runtime_error("Invalid given [ID] for 'Button' look-up.");
-
-    // return &(this->btnProp.at( id ).second);
+    assert( id >= 0 && id < BTN_COUNT );
+    
     return this->b_bounds[id];
 }

@@ -1,11 +1,14 @@
-#include <engine/Loading.hpp>
+#include <engine/states/Loading.hpp>
 
-#include <cache/TextureCache.hpp>
+#include <tools/Json.hpp>
+
 #include <cache/SoundCache.hpp>
+#include <cache/TextureCache.hpp>
 
 #include <cache/visuals/MenuUI.hpp>
 #include <cache/visuals/PlayUI.hpp>
 #include <cache/visuals/SettingUI.hpp>
+
 
 using namespace std::literals::chrono_literals;
 
@@ -37,24 +40,24 @@ Loading::Loading() : State(), fnt(), txt(fnt), progTxt(fnt) {
 
 void Loading::Load() {
     try {
-        loader = std::thread([this]()
-        {
+        loader = std::thread([this]() {
+            
             // create OpenGL/SFML context
             sf::Context ctx;
-
+            
+            Json::reLoad();
             TextureCache::getInst().Load( *this );
-
+            SoundCache::getInst().Load( *this );
+            
             MenuUI::getInst().Load( *this );
             PlayUI::getInst().Load( *this );
             SettingUI::getInst().Load( *this );
-            
-            SoundCache::getInst().Load( *this );
 
             loadDone.store(true);
 
         });
     } catch (...) {
-        throw std::runtime_error("Loading Thread Fail\n");   
+        throw std::runtime_error("Loading Thread Failed\n");   
     }
 }
 
@@ -77,6 +80,13 @@ void Loading::Render(sf::RenderWindow &win) const {
     win.draw(bg);
     win.draw(txt);
     win.draw(progTxt);
+}
+
+Action Loading::feature() const {
+    if ( this->loadDone.load() )
+        return Action::raiseMain;
+    
+    return Action::None;
 }
 
 State::Type Loading::getType() const { return State::Type::Loading; }

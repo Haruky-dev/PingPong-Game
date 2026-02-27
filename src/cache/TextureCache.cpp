@@ -1,12 +1,12 @@
 #include <cache/TextureCache.hpp>
 
-#include <engine/Loading.hpp>
+#include <engine/states/Loading.hpp>
 
-#include <iostream>
 
 TextureCache& TextureCache::getInst() {
     static TextureCache inst = TextureCache();
     
+    // This func
     return inst;
 }
 
@@ -26,7 +26,7 @@ void TextureCache::Load( Progressive& prog ) {
     prog.incCount( 2 );
 
     this->cache["mm/btn/set"] = std::make_unique<sf::Texture>();
-    if (!(this->cache["mm/btn/set"]->loadFromFile( "assets/setting.png" )))
+    if (!(this->cache["mm/btn/set"]->loadFromFile( "assets/set.png" )))
         throw std::runtime_error("Cannot load [Texture] 'MainMenu/Button/Setting'!");
     prog.incCount( 2 );
 

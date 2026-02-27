@@ -8,7 +8,7 @@
 #include <math.h>
 
 Player::Player(const sf::Sprite &spr, bool side)
-    : bar(spr), score(0), accTime(sf::Time::Zero), speed(Json::getFloat("p.speed")),
+    : bar(spr), score(0), accTime(0.f), speed(Json::getFloat("p.speed")),
     AIspeed(Json::getFloat("ai.speed")) {
 
     this->bar.setOrigin({
@@ -26,19 +26,18 @@ Player::Player(const sf::Sprite &spr, bool side)
 }
 
 void Player::UpdateState(sf::Time &dt) {
+    assert( this->id == 1 );
+    
     double Y_pos = bar.getPosition().y;
     double halfHeight = this->getBounds().size.y / 2.0f;
-
-    // Arrows
-    if (this->id == 1) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-            if (Y_pos - halfHeight > 14.0f)
-                bar.move({0, -speed * dt.asSeconds()});
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-            if (Y_pos + halfHeight < Tool::HEIGHT - 14.0f)
-                bar.move({0, speed * dt.asSeconds()});
-        }
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+        if (Y_pos - halfHeight > 12.0f)
+            bar.move({0, -speed * dt.asSeconds()});
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+        if (Y_pos + halfHeight < Tool::HEIGHT - 12.0f)
+            bar.move({0, speed * dt.asSeconds()});
     }
 }
 
@@ -52,8 +51,8 @@ sf::FloatRect Player::getBounds() const {
 
 void Player::UpdateAI(sf::Time &dt, Ball &ball) {
     /*
-        Paussible areas to feeble AI
-            - add delay before reaction
+        Possible areas to feeble AI
+            - add retDur before reaction
             - drop speed
             - react only when the ball is somewhat near
             -
@@ -65,7 +64,7 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
     double TakenTime = std::abs((ball.getPos().x - this->getPos().x) / ball.getVelocity().x);
     double estimatedY = ball.getPos().y + ball.getVelocity().y * TakenTime;
 
-    // Reversing 'estimatedY' when it's far away from 'win' resolutions
+    // Reversing 'estimatedY' when the ball is doomed to hit a wall and reflect
     while (estimatedY < 0 || estimatedY > Tool::HEIGHT) {
         if (estimatedY < 0)
             estimatedY = -estimatedY;
@@ -76,8 +75,7 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
     double diffY = estimatedY - this->bar.getPosition().y;
 
     // Movement Logic
-    if (ball.moving && (std::abs(diffY) > Json::getFloat("ai.deadZone")))
-    { // 20px Dead Zone, no reaction
+    if (ball.moving && (std::abs(diffY) > Json::getFloat("ai.deadZone"))) {
         double mov = this->AIspeed * dt.asSeconds();
         /*
             mov sometimes might be bigger than the actual distance (diffY)
@@ -91,8 +89,7 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
             prevent is called 'Overshooting'.
         */
 
-        if (ball.getDirec().x <= 0)
-        {                  // ball is moving towards AI / East Player
+        if (ball.getDirec().x <= 0) { // ball is moving towards AI / East Player
             if (diffY < 0) // future ballY is ABOVE AI bar
                 this->bar.move({0.f, (float) -std::min(mov, std::abs(diffY))});
             else // future ballY is BELLOW AI bar
@@ -103,34 +100,23 @@ void Player::UpdateAI(sf::Time &dt, Ball &ball) {
     // Return to Center Logic
     // (When ball is not moving || moving towards West Player)
     if ((!ball.moving) ||
-        ((accTime.asSeconds() <= Json::getFloat("ai.retTime")) && (ball.getDirec().x > 0)))
-    {
-        this->accTime += dt;
-        // try K = elapsedTime / movDuration;
-        // that makes sure it's between 0 and 1
-        // and it tracks the progress
+        ((accTime <= Json::getFloat("ai.retTime")) &&
+            (ball.getDirec().x > 0)
+    )) {
+        
+        this->accTime += dt.asSeconds();
+        
+        float K = accTime / Json::getFloat("ai.retDur"); 
+        K = std::clamp( K, 0.0f, 1.f );
 
-        double K = accTime.asSeconds() / Json::getFloat("ai.delay"); // 1.0f: Animation Duration
-        // K = (K < 0.0f)? 0 : (K > 1.0f)? 1 : K;
-        K = std::clamp(K, (double)0.0f, (double)1.0f);
-        // double fk = K * K;
-        // double fk = K*K * (3 - 2*K);
-
-        //------- FIX THIS LATER. FUCKING GARBAGEE
-        double fk = (K == 0.f) ? 0 : (K == 1) ? 1
-                               : (K < 0.5)  ? std::pow(2, 20 * K - 10) / 2.0f
-                                            : (2 - std::pow(2, -20 * K + 10)) / 2.0f;
-
-        // double targetY = getPos().y + (Tool::HEIGHT/2.0f - getPos().y) * fk;
-        float targetY = Math::Lerp(this->getPos().y, Tool::HEIGHT / 2.0f, fk);
+        float targetY = Math::Lerp(this->getPos().y, Tool::HEIGHT / 2.0f, Math::easeOut(K));
         float step = targetY - getPos().y;
 
         this->bar.move({0.f, step});
     }
 
-    else if (ball.getDirec().x <= 0)
-    {
-        accTime = sf::Time::Zero;
+    else if (ball.getDirec().x <= 0) {
+        accTime = 0.f;
     }
 }
 

@@ -15,6 +15,7 @@ class Tool {
 
         static int WIDTH;
         static int HEIGHT;
+        static float f_WIDTH;
         static sf::Vector2f W_CTR;
 
         enum class Sides {

@@ -1,6 +1,6 @@
 #include <cache/SoundCache.hpp>
 
-#include <engine/Loading.hpp>
+#include <engine/states/Loading.hpp>
 
 #include <iostream>
 
